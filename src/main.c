@@ -4,14 +4,12 @@
 
 int main(int ac, char **av)
 {
-    for (int i = 1; i < ac; i++) {
-        EitherFileOrError file = open_file(av[i]);
+    EitherFilesOrError files = open_files((const char **)av + 1, ac - 1);
 
-        if (file.is_left) {
-            close_file(file.left);
-        } else {
-            printf("Error: %s\n", file.right.message);
-        }
+    if (!files.is_left) {
+        print_error(files.right);
+        return 1;
     }
+    close_files(files.left);
     return 0;
 }

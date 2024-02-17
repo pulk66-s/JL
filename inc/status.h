@@ -7,9 +7,10 @@
 */
 
 typedef enum {
-    JL_OK = 0,      // No error
-    JL_ERROR = 1,   // General error
-    JL_LIBC_ERROR,  // Error from libc
+    JL_OK = 0,
+    JL_ERROR = 1,
+    JL_LIBC_ERROR,
+    JL_OUT_OF_MEMORY,
 } jl_status_t;
 
 #endif

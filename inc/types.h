@@ -7,6 +7,7 @@
 
 #include "status.h"
 #include <errno.h>
+#include <stdio.h>
 
 #define true    1
 #define false   0
@@ -40,6 +41,11 @@ static inline Error error(char *message, jl_status_t code)
         .file = __FILE__,
         .line = __LINE__
     };
+}
+
+static inline void print_error(Error error)
+{
+    fprintf(stderr, "Error in %s:%d: %s\n", error.file, error.line, error.message);
 }
 
 static inline char *fopen_errno(int err)
