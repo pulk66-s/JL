@@ -6,6 +6,11 @@
 */
 
 #include "types.h"
+#include <stdio.h>
 
+typedef Either(FILE *, Error) EitherFileOrError;
+
+EitherFileOrError open_file(const char *filename);
+MaybeError close_file(FILE *file);
 
 #endif

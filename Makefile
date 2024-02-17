@@ -1,11 +1,12 @@
 NAME	= jl
 
-CC		= gcc
+CC		= gcc -g3
 INCLUDE	= -I./inc
 CFLAGS	= -W -Wall -Wextra -Werror $(INCLUDE)
 
-SRC	= src/main.c	\
-	src/files/read.c
+SRC	= src/main.c		\
+	src/files/read.c	\
+	src/files/file.c
 OBJ	= $(SRC:.c=.o)
 
 all: $(NAME)

@@ -8,7 +8,8 @@
 
 typedef enum {
     JL_OK = 0,      // No error
-    JL_ERROR = 1    // General error
+    JL_ERROR = 1,   // General error
+    JL_LIBC_ERROR,  // Error from libc
 } jl_status_t;
 
 #endif

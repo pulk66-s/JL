@@ -1,2 +1,4 @@
 *.o
 jl
+.vscode
+vgcore*
