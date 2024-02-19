@@ -18,7 +18,8 @@ enum token_type {
     STRING,
     ATOM_ADD,
     SPACES,
-    ADDITION
+    ADDITION,
+    UNKNOWN
 };
 
 struct cst {
@@ -31,10 +32,11 @@ struct cst {
 };
 
 typedef Either(struct cst *, Error) EitherCSTOrError;
-typedef EitherCSTOrError (*EitherCSTFunc)(char *);
 
-EitherCSTOrError cst_parse_or(EitherCSTFunc *funcs, char **file_content);
-MaybeError parse_spaces(char **file_content);
+EitherCSTOrError cst_parse_and(EitherCSTOrError (*funcs[])(char **), char **file_content);
+EitherCSTOrError cst_parse_or(EitherCSTOrError (*funcs[])(char **), char **file_content);
+EitherCSTOrError parse_spaces(char **file_content);
+EitherCSTOrError parse_maybe_spaces(char **file_content);
 EitherCSTOrError parse_number(char **file_content);
 EitherCSTOrError parse_addition_atom(char **file_content);
 EitherCSTOrError parse_addition(char **file_content);

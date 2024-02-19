@@ -21,7 +21,7 @@ static EitherASTOrError ast_parse_number(int number)
 static EitherASTOrError ast_parse_add(struct cst *cst)
 {
     EitherASTOrError left = ast_parse_expr(cst->children[0]);
-    EitherASTOrError right = ast_parse_expr(cst->children[2]);
+    EitherASTOrError right = ast_parse_expr(cst->children[4]);
 
     if (!left.is_left)
         return left;

@@ -27,6 +27,12 @@ static MaybeError delete_add_atom(struct cst *cst)
     return Nothing(MaybeError);
 }
 
+static MaybeError delete_spaces(struct cst *cst)
+{
+    free(cst);
+    return Nothing(MaybeError);
+}
+
 MaybeError delete_cst(struct cst *cst)
 {
     switch (cst->type) {
@@ -36,6 +42,8 @@ MaybeError delete_cst(struct cst *cst)
             return delete_cst_number(cst);
         case ATOM_ADD:
             return delete_add_atom(cst);
+        case SPACES:
+            return delete_spaces(cst);
         default:
             return Just(MaybeError, error("Unknown CST type", JL_ERROR));
     }
