@@ -32,5 +32,6 @@ struct ast {
 typedef Either(struct ast *, Error) EitherASTOrError;
 
 EitherASTOrError cst_to_ast(struct cst *cst);
+MaybeError delete_ast(struct ast *ast);
 
 #endif

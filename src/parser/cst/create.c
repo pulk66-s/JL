@@ -12,20 +12,13 @@ EitherCSTOrError cst_parse_or(EitherCSTFunc *funcs, char **file_content)
     return Right(EitherCSTOrError, error("No parser found in the or list of parsers.", JL_ERROR));
 }
 
-EitherCSTOrError parse_spaces(char **file_content)
+MaybeError parse_spaces(char **file_content)
 {
     if ((*file_content)[0] != ' ')
-        return Right(EitherCSTOrError, error("Expected a space.", JL_ERROR));
+        return Just(MaybeError, error("Expected a space.", JL_ERROR));
     while (*file_content[0] == ' ')
         (*file_content)++;
-
-    struct cst *c = malloc(sizeof(struct cst));
-    if (!c)
-        return Right(EitherCSTOrError, error("Memory allocation failed.", JL_OUT_OF_MEMORY));
-    *c = (struct cst) {
-        .type = SPACES
-    };
-    return Left(EitherCSTOrError, c);
+    return Nothing(MaybeError);
 }
 
 static bool is_digit(char c)
@@ -98,13 +91,14 @@ EitherCSTOrError parse_addition(char **file_content)
 
     if (!c)
         return Right(EitherCSTOrError, error("Memory allocation failed.", JL_OUT_OF_MEMORY));
-    c->children = malloc(3 * sizeof(struct cst *));
+    c->children = malloc(4 * sizeof(struct cst *));
     if (!c->children)
         return Right(EitherCSTOrError, error("Memory allocation failed.", JL_OUT_OF_MEMORY));
     c->type = ADDITION;
     c->children[0] = left.left;
     c->children[1] = atom.left;
     c->children[2] = right.left;
+    c->children[3] = NULL;
     return Left(EitherCSTOrError, c);
 }
 

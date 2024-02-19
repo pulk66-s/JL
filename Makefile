@@ -8,8 +8,10 @@ SRC	= src/main.c					\
 	src/files/read.c				\
 	src/files/file.c				\
 	src/types/list.c				\
-	src/parser/cst/cst.c			\
-	src/parser/ast/ast.c			\
+	src/parser/cst/create.c			\
+	src/parser/cst/delete.c			\
+	src/parser/ast/create.c			\
+	src/parser/ast/delete.c			\
 	src/interpreter/interpreter.c
 OBJ	= $(SRC:.c=.o)
 

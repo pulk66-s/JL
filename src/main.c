@@ -12,9 +12,9 @@ static int err_handling(Error err)
     return 1;
 }
 
-int main(int ac, char **av)
+int main(int ac, const char **av)
 {
-    EitherFilesOrError files = open_files((const char **)av + 1, ac - 1);
+    EitherFilesOrError files = open_files(av + 1, ac - 1);
 
     if (!files.is_left)
         return err_handling(files.right);
@@ -36,6 +36,16 @@ int main(int ac, char **av)
         return err_handling(ast.right);
     interpret(ast.left);
     free(res.left);
-    close_files(files.left);
+
+    MaybeError err = delete_cst(cst.left);
+
+    if (!err.nothing)
+        return err_handling(err.data);
+    err = delete_ast(ast.left);
+    if (!err.nothing)
+        return err_handling(err.data);
+    err = close_files(files.left);
+    if (!err.nothing)
+        return err_handling(err.data);
     return 0;
 }
