@@ -5,6 +5,10 @@
  * Abstract Syntax Tree that represents the structure of the JL.
 */
 
+#include "types/func.h"
+#include "types/error.h"
+#include "cst.h"
+
 enum ast_type {
     AST_NUMBER,
     AST_ADD,
@@ -22,7 +26,11 @@ struct ast {
     union {
         int number;
         struct ast_add add;
-    };
+    } value;
 };
+
+typedef Either(struct ast *, Error) EitherASTOrError;
+
+EitherASTOrError cst_to_ast(struct cst *cst);
 
 #endif

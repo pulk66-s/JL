@@ -30,7 +30,7 @@ struct cst {
     struct cst **children;
 };
 
-typedef Either(struct cst, Error) EitherCSTOrError;
+typedef Either(struct cst *, Error) EitherCSTOrError;
 typedef EitherCSTOrError (*EitherCSTFunc)(char *);
 
 EitherCSTOrError cst_parse_or(EitherCSTFunc *funcs, char **file_content);
@@ -38,5 +38,6 @@ EitherCSTOrError parse_spaces(char **file_content);
 EitherCSTOrError parse_number(char **file_content);
 EitherCSTOrError parse_addition_atom(char **file_content);
 EitherCSTOrError parse_addition(char **file_content);
+EitherCSTOrError parse_program(char **file_content);
 
 #endif

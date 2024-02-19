@@ -13,19 +13,16 @@ typedef struct {
     int line;
 } Error;
 
-static inline Error error(char *message, jl_status_t code)
-{
-    return (Error) {
-        .message = message,
-        .code = code,
-        .file = __FILE__,
-        .line = __LINE__
-    };
-}
-
 static inline void print_error(Error error)
 {
     fprintf(stderr, "Error in %s:%d: %s\n", error.file, error.line, error.message);
+}
+
+#define error(m, c) (Error) { \
+    .message = m, \
+    .code = c, \
+    .file = __FILE__, \
+    .line = __LINE__ \
 }
 
 static inline char *fopen_errno(int err)

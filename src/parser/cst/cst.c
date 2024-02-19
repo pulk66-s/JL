@@ -1,4 +1,5 @@
 #include "cst.h"
+#include <stdlib.h>
 
 EitherCSTOrError cst_parse_or(EitherCSTFunc *funcs, char **file_content)
 {
@@ -17,9 +18,14 @@ EitherCSTOrError parse_spaces(char **file_content)
         return Right(EitherCSTOrError, error("Expected a space.", JL_ERROR));
     while (*file_content[0] == ' ')
         (*file_content)++;
-    return Left(EitherCSTOrError, (struct cst){
+
+    struct cst *c = malloc(sizeof(struct cst));
+    if (!c)
+        return Right(EitherCSTOrError, error("Memory allocation failed.", JL_OUT_OF_MEMORY));
+    *c = (struct cst) {
         .type = SPACES
-    });
+    };
+    return Left(EitherCSTOrError, c);
 }
 
 static bool is_digit(char c)
@@ -39,13 +45,16 @@ EitherCSTOrError parse_number(char **file_content)
         (*file_content)++;
     }
 
-    struct cst c = {
+    struct cst *c = malloc(sizeof(struct cst));
+
+    if (!c)
+        return Right(EitherCSTOrError, error("Memory allocation failed.", JL_OUT_OF_MEMORY));
+    *c = (struct cst) {
         .type = NUMBER,
         .value = {
             .number = number
         }
     };
-
     return Left(EitherCSTOrError, c);
 }
 
@@ -54,9 +63,15 @@ EitherCSTOrError parse_addition_atom(char **file_content)
     if ((*file_content)[0] != ADD_SIGN)
         return Right(EitherCSTOrError, error("Expected an addition sign.", JL_ERROR));
     (*file_content)++;
-    return Left(EitherCSTOrError, (struct cst){
+
+    struct cst *c = malloc(sizeof(struct cst));
+
+    if (!c)
+        return Right(EitherCSTOrError, error("Memory allocation failed.", JL_OUT_OF_MEMORY));
+    *c = (struct cst) {
         .type = ATOM_ADD
-    });
+    };
+    return Left(EitherCSTOrError, c);
 }
 
 EitherCSTOrError parse_addition(char **file_content)
@@ -79,14 +94,21 @@ EitherCSTOrError parse_addition(char **file_content)
         return right;
     }
 
-    struct cst c = {
-        .type = ADDITION,
-        .children = (struct cst *[]){
-            &left.left,
-            &atom.left,
-            &right.left
-        }
-    };
+    struct cst *c = malloc(sizeof(struct cst));
 
+    if (!c)
+        return Right(EitherCSTOrError, error("Memory allocation failed.", JL_OUT_OF_MEMORY));
+    c->children = malloc(3 * sizeof(struct cst *));
+    if (!c->children)
+        return Right(EitherCSTOrError, error("Memory allocation failed.", JL_OUT_OF_MEMORY));
+    c->type = ADDITION;
+    c->children[0] = left.left;
+    c->children[1] = atom.left;
+    c->children[2] = right.left;
     return Left(EitherCSTOrError, c);
+}
+
+EitherCSTOrError parse_program(char **file_content)
+{
+    return parse_addition(file_content);
 }

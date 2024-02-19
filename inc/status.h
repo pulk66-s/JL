@@ -9,8 +9,8 @@
 typedef enum {
     JL_OK = 0,
     JL_ERROR = 1,
-    JL_LIBC_ERROR,
-    JL_OUT_OF_MEMORY,
+    JL_LIBC_ERROR = 2,
+    JL_OUT_OF_MEMORY = 3,
 } jl_status_t;
 
 #endif
