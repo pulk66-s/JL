@@ -26,5 +26,8 @@ fclean: clean
 
 re: fclean all
 
+run_tests:
+	python3 tests/e2e/launch.py
+
 %.o: %.c
 	$(CC) -c $(CFLAGS) -o $@ $<

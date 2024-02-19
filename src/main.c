@@ -4,6 +4,7 @@
 #include "ast.h"
 #include "interpreter.h"
 #include <stdio.h>
+#include <stdlib.h>
 
 static int err_handling(Error err)
 {
@@ -34,5 +35,7 @@ int main(int ac, char **av)
     if (!ast.is_left)
         return err_handling(ast.right);
     interpret(ast.left);
+    free(res.left);
+    close_files(files.left);
     return 0;
 }
