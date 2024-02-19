@@ -49,7 +49,14 @@ EitherCSTOrError cst_parse_and(EitherCSTOrError (*funcs[])(char **), char **file
     return Left(EitherCSTOrError, c);
 }
 
+EitherCSTOrError parse_binop(char **file_content)
+{
+    return cst_parse_or((EitherCSTOrError (*[])(char **)) {
+        parse_addition, parse_substration, NULL
+    }, file_content);
+}
+
 EitherCSTOrError parse_program(char **file_content)
 {
-    return parse_addition(file_content);
+    return parse_binop(file_content);
 }

@@ -10,6 +10,7 @@
 #include <stdarg.h>
 
 #define ADD_SIGN    '+'
+#define SUB_SIGN    '-'
 
 enum token_type {
     PROGRAM,
@@ -17,8 +18,10 @@ enum token_type {
     NUMBER,
     STRING,
     ATOM_ADD,
+    ATOM_SUB,
     SPACES,
     ADDITION,
+    SUBSTRACTION,
     UNKNOWN
 };
 
@@ -39,8 +42,10 @@ EitherCSTOrError parse_spaces(char **file_content);
 EitherCSTOrError parse_maybe_spaces(char **file_content);
 EitherCSTOrError parse_number(char **file_content);
 EitherCSTOrError parse_addition_atom(char **file_content);
+EitherCSTOrError parse_substraction_atom(char **file_content);
 EitherCSTOrError parse_addition(char **file_content);
 EitherCSTOrError parse_program(char **file_content);
+EitherCSTOrError parse_substration(char **file_content);
 MaybeError delete_cst(struct cst *cst);
 
 #endif

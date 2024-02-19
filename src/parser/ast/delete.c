@@ -7,13 +7,13 @@ static MaybeError delete_ast_number(struct ast *ast)
     return Nothing(MaybeError);
 }
 
-static MaybeError delete_ast_add(struct ast *ast)
+static MaybeError delete_ast_binop(struct ast *ast)
 {
-    MaybeError err = delete_ast(ast->value.add.left);
+    MaybeError err = delete_ast(ast->value.binop.left);
 
     if (!err.nothing)
         return err;
-    err = delete_ast(ast->value.add.right);
+    err = delete_ast(ast->value.binop.right);
     if (!err.nothing)
         return err;
     free(ast);
@@ -24,7 +24,8 @@ MaybeError delete_ast(struct ast *ast)
 {
     switch (ast->type) {
         case AST_ADD:
-            return delete_ast_add(ast);
+        case AST_SUB:
+            return delete_ast_binop(ast);
         case AST_NUMBER:
             return delete_ast_number(ast);
         default:

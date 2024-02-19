@@ -15,6 +15,7 @@ SRC	= src/main.c						\
 	src/parser/cst/create/spaces.c		\
 	src/parser/cst/create/atom.c		\
 	src/parser/ast/create.c				\
+	src/parser/ast/operation.c			\
 	src/parser/ast/delete.c				\
 	src/interpreter/interpreter.c
 OBJ	= $(SRC:.c=.o)

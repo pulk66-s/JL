@@ -7,7 +7,7 @@ static MaybeError delete_cst_number(struct cst *cst)
     return Nothing(MaybeError);
 }
 
-static MaybeError delete_cst_add(struct cst *cst)
+static MaybeError delete_cst_binop(struct cst *cst)
 {
     for (int i = 0; cst->children[i] != NULL; i++) {
         MaybeError err = delete_cst(cst->children[i]);
@@ -21,7 +21,7 @@ static MaybeError delete_cst_add(struct cst *cst)
     return Nothing(MaybeError);
 }
 
-static MaybeError delete_add_atom(struct cst *cst)
+static MaybeError delete_char_atom(struct cst *cst)
 {
     free(cst);
     return Nothing(MaybeError);
@@ -36,12 +36,14 @@ static MaybeError delete_spaces(struct cst *cst)
 MaybeError delete_cst(struct cst *cst)
 {
     switch (cst->type) {
+        case SUBSTRACTION:
         case ADDITION:
-            return delete_cst_add(cst);
+            return delete_cst_binop(cst);
         case NUMBER:
             return delete_cst_number(cst);
         case ATOM_ADD:
-            return delete_add_atom(cst);
+        case ATOM_SUB:
+            return delete_char_atom(cst);
         case SPACES:
             return delete_spaces(cst);
         default:
