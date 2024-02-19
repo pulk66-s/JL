@@ -2,14 +2,13 @@ NAME	= jl
 
 CC		= gcc -g3
 INCLUDE	= -I./inc
-CFLAGS	= -W -Wall -Wextra $(INCLUDE)
+CFLAGS	= -W -Wall -Wextra -Wno-missing-braces $(INCLUDE)
 
 SRC	= src/main.c			\
 	src/files/read.c		\
 	src/files/file.c		\
-	src/parser/ast.c		\
-	src/parser/program.c	\
-	src/types/list.c
+	src/types/list.c		\
+	src/parser/cst/cst.c
 OBJ	= $(SRC:.c=.o)
 
 all: $(NAME)

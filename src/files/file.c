@@ -50,3 +50,25 @@ MaybeError close_files(FILE **files)
     free(files);
     return Nothing(MaybeError);
 }
+
+EitherStringOrError read_file(FILE *file)
+{
+    char *buffer = NULL;
+    size_t size = 0;
+    ssize_t read;
+
+    do {
+        buffer = realloc(buffer, size + 4096);
+        if (!buffer)
+            return Right(EitherStringOrError, error("out of memory", JL_OUT_OF_MEMORY));
+        read = fread(buffer + size, 1, 4096, file);
+        size += read;
+    } while (read == 4096);
+    if (ferror(file)) {
+        free(buffer);
+        return Right(EitherStringOrError, error(fopen_errno(errno), JL_LIBC_ERROR));
+    }
+    buffer = realloc(buffer, size + 1);
+    buffer[size] = '\0';
+    return Left(EitherStringOrError, buffer);
+}

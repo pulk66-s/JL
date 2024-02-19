@@ -7,13 +7,18 @@
 */
 
 #include "types.h"
+#include <stdarg.h>
+
+#define ADD_SIGN    '+'
 
 enum token_type {
     PROGRAM,
     STATEMENT,
     NUMBER,
     STRING,
-    ADD,
+    ATOM_ADD,
+    SPACES,
+    ADDITION
 };
 
 struct cst {
@@ -21,8 +26,17 @@ struct cst {
     union {
         int number;
         char *string;
-    };
+    } value;
     struct cst **children;
 };
+
+typedef Either(struct cst, Error) EitherCSTOrError;
+typedef EitherCSTOrError (*EitherCSTFunc)(char *);
+
+EitherCSTOrError cst_parse_or(EitherCSTFunc *funcs, char **file_content);
+EitherCSTOrError parse_spaces(char **file_content);
+EitherCSTOrError parse_number(char **file_content);
+EitherCSTOrError parse_addition_atom(char **file_content);
+EitherCSTOrError parse_addition(char **file_content);
 
 #endif
