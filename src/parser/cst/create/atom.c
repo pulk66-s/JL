@@ -1,13 +1,13 @@
 #include "cst.h"
 #include <stdlib.h>
 
-static EitherCSTOrError parse_char_atom(
+static EitherCSTOrError cst_parse_char_atom(
     char ch,
     char **file_content,
     enum token_type type
 ) {
     if ((*file_content)[0] != ch)
-        return Right(EitherCSTOrError, error("Expected an addition sign.", JL_ERROR));
+        return Right(EitherCSTOrError, error("Expected an atom char sign.", JL_ERROR));
     (*file_content)++;
 
     struct cst *c = malloc(sizeof(struct cst));
@@ -20,12 +20,12 @@ static EitherCSTOrError parse_char_atom(
     return Left(EitherCSTOrError, c);
 }
 
-EitherCSTOrError parse_addition_atom(char **file_content)
+EitherCSTOrError cst_parse_addition_atom(char **file_content)
 {
-    return parse_char_atom(ADD_SIGN, file_content, ATOM_ADD);
+    return cst_parse_char_atom(ADD_SIGN, file_content, ATOM_ADD);
 }
 
-EitherCSTOrError parse_substraction_atom(char **file_content)
+EitherCSTOrError cst_parse_substraction_atom(char **file_content)
 {
-    return parse_char_atom(SUB_SIGN, file_content, ATOM_SUB);
+    return cst_parse_char_atom(SUB_SIGN, file_content, ATOM_SUB);
 }

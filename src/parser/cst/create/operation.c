@@ -1,14 +1,14 @@
 #include "cst.h"
 #include <stdlib.h>
 
-static EitherCSTOrError parse_operation(
+static EitherCSTOrError cst_parse_operation(
     char **file_content,
     EitherCSTOrError (*func)(char **),
     enum token_type type
 ) {
     EitherCSTOrError op = cst_parse_and((EitherCSTOrError (*[])(char **)) {
-        parse_number, parse_maybe_spaces, func, parse_maybe_spaces,
-        parse_number, NULL
+        cst_parse_number, cst_parse_maybe_spaces, func, cst_parse_maybe_spaces,
+        cst_parse_rvalue, NULL
     }, file_content);
 
     if (!op.is_left)
@@ -17,12 +17,12 @@ static EitherCSTOrError parse_operation(
     return op;
 }
 
-EitherCSTOrError parse_substration(char **file_content)
+EitherCSTOrError cst_parse_substraction(char **file_content)
 {
-    return parse_operation(file_content, parse_substraction_atom, SUBSTRACTION);
+    return cst_parse_operation(file_content, cst_parse_substraction_atom, SUBSTRACTION);
 }
 
-EitherCSTOrError parse_addition(char **file_content)
+EitherCSTOrError cst_parse_addition(char **file_content)
 {
-    return parse_operation(file_content, parse_addition_atom, ADDITION);
+    return cst_parse_operation(file_content, cst_parse_addition_atom, ADDITION);
 }

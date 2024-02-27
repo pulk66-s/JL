@@ -6,6 +6,7 @@ EitherCSTOrError cst_parse_or(EitherCSTOrError (*funcs[])(char **), char **file_
     for (size_t i = 0; funcs[i]; i++) {
         EitherCSTOrError cst = funcs[i](file_content);
 
+        printf("index %zu, buffer: (%s)\n", i, *file_content);
         if (cst.is_left)
             return cst;
     }
@@ -49,14 +50,21 @@ EitherCSTOrError cst_parse_and(EitherCSTOrError (*funcs[])(char **), char **file
     return Left(EitherCSTOrError, c);
 }
 
-EitherCSTOrError parse_binop(char **file_content)
+EitherCSTOrError cst_parse_rvalue(char **file_content)
 {
     return cst_parse_or((EitherCSTOrError (*[])(char **)) {
-        parse_addition, parse_substration, NULL
+        cst_parse_binop, cst_parse_number, NULL
     }, file_content);
 }
 
-EitherCSTOrError parse_program(char **file_content)
+EitherCSTOrError cst_parse_binop(char **file_content)
 {
-    return parse_binop(file_content);
+    return cst_parse_or((EitherCSTOrError (*[])(char **)) {
+        cst_parse_addition, cst_parse_substraction, NULL
+    }, file_content);
+}
+
+EitherCSTOrError cst_parse_program(char **file_content)
+{
+    return cst_parse_binop(file_content);
 }

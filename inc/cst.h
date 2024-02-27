@@ -38,14 +38,16 @@ typedef Either(struct cst *, Error) EitherCSTOrError;
 
 EitherCSTOrError cst_parse_and(EitherCSTOrError (*funcs[])(char **), char **file_content);
 EitherCSTOrError cst_parse_or(EitherCSTOrError (*funcs[])(char **), char **file_content);
-EitherCSTOrError parse_spaces(char **file_content);
-EitherCSTOrError parse_maybe_spaces(char **file_content);
-EitherCSTOrError parse_number(char **file_content);
-EitherCSTOrError parse_addition_atom(char **file_content);
-EitherCSTOrError parse_substraction_atom(char **file_content);
-EitherCSTOrError parse_addition(char **file_content);
-EitherCSTOrError parse_program(char **file_content);
-EitherCSTOrError parse_substration(char **file_content);
+EitherCSTOrError cst_parse_spaces(char **file_content);
+EitherCSTOrError cst_parse_maybe_spaces(char **file_content);
+EitherCSTOrError cst_parse_number(char **file_content);
+EitherCSTOrError cst_parse_addition_atom(char **file_content);
+EitherCSTOrError cst_parse_substraction_atom(char **file_content);
+EitherCSTOrError cst_parse_addition(char **file_content);
+EitherCSTOrError cst_parse_program(char **file_content);
+EitherCSTOrError cst_parse_substraction(char **file_content);
+EitherCSTOrError cst_parse_rvalue(char **file_content);
+EitherCSTOrError cst_parse_binop(char **file_content);
 MaybeError delete_cst(struct cst *cst);
 
 #endif

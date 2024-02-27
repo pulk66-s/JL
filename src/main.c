@@ -25,7 +25,7 @@ int main(int ac, const char **av)
         return err_handling(res.right);
 
     char *content = res.left;
-    EitherCSTOrError cst = parse_program(&content);
+    EitherCSTOrError cst = cst_parse_program(&content);
 
     if (!cst.is_left)
         return err_handling(cst.right); 

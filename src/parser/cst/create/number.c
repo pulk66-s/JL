@@ -6,7 +6,7 @@ static bool is_digit(char c)
     return c >= '0' && c <= '9';
 }
 
-EitherCSTOrError parse_number(char **file_content)
+EitherCSTOrError cst_parse_number(char **file_content)
 {
     if (!is_digit((*file_content)[0]))
         return Right(EitherCSTOrError, error("Expected a number.", JL_ERROR));
