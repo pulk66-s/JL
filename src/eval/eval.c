@@ -1,4 +1,4 @@
-#include "interpreter.h"
+#include "eval.h"
 
 static EitherIntOrError understand_expr(struct ast *ast);
 
@@ -49,7 +49,7 @@ static EitherIntOrError understand_expr(struct ast *ast)
     }
 }
 
-void interpret(struct ast *ast)
+void eval(struct ast *ast)
 {
     EitherIntOrError result = understand_expr(ast);
 

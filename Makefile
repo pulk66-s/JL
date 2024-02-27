@@ -17,7 +17,8 @@ SRC	= src/main.c						\
 	src/parser/ast/create.c				\
 	src/parser/ast/operation.c			\
 	src/parser/ast/delete.c				\
-	src/interpreter/interpreter.c
+	src/eval/eval.c						\
+	src/tty/tty.c
 OBJ	= $(SRC:.c=.o)
 
 all: $(NAME)
