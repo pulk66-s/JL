@@ -4,20 +4,14 @@ CC		= gcc -g3
 INCLUDE	= -I./inc
 CFLAGS	= -W -Wall -Wextra -Wno-missing-braces $(INCLUDE)
 
-SRC	= src/main.c						\
-	src/files/read.c					\
-	src/files/file.c					\
-	src/types/list.c					\
-	src/parser/cst/delete.c				\
-	src/parser/cst/create.c				\
-	src/parser/cst/create/operation.c	\
-	src/parser/cst/create/number.c		\
-	src/parser/cst/create/spaces.c		\
-	src/parser/cst/create/atom.c		\
-	src/parser/ast/create.c				\
-	src/parser/ast/operation.c			\
-	src/parser/ast/delete.c				\
-	src/interpreter/interpreter.c
+SRC	= src/main.c		\
+	src/tty.c			\
+	src/cst/create.c	\
+	src/cst/delete.c	\
+	src/ast/create.c	\
+	src/ast/delete.c	\
+	src/eval/ast.c
+
 OBJ	= $(SRC:.c=.o)
 
 all: $(NAME)
