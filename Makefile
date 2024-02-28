@@ -8,8 +8,12 @@ SRC	= src/main.c		\
 	src/tty.c			\
 	src/cst/create.c	\
 	src/cst/delete.c	\
+	src/cst/char.c		\
+	src/cst/string.c	\
+	src/cst/operation.c	\
 	src/ast/create.c	\
 	src/ast/delete.c	\
+	src/ast/operation.c	\
 	src/eval/ast.c
 
 OBJ	= $(SRC:.c=.o)

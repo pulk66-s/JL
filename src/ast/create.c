@@ -1,8 +1,11 @@
 #include "ast.h"
 #include <stdlib.h>
 
-static struct ast *create_int(struct cst *cst)
+struct ast *create_ast_int(struct cst *cst)
 {
+    if (cst->type != CST_TYPE_INT)
+        return NULL;
+
     struct ast *ast = malloc(sizeof(struct ast));
 
     if (!ast)
@@ -16,7 +19,9 @@ static struct ast *create_expr(struct cst *cst)
 {
     switch (cst->type) {
         case CST_TYPE_INT:
-            return create_int(cst);
+            return create_ast_int(cst);
+        case CST_TYPE_OPERATION:
+            return create_ast_operation(cst);
         default:
             return NULL;
     }

@@ -3,6 +3,7 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 
 static void eval_tty_expr(char *expr)
 {
@@ -60,6 +61,10 @@ int tty_loop(void)
 
         if (!line)
             return 1;
+        if (strcmp(line, "exit") == 0) {
+            free(line);
+            return 0;
+        }
         eval_tty_expr(line);
         free(line);
     }

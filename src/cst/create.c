@@ -1,8 +1,11 @@
 #include "cst.h"
 #include <stdlib.h>
 
-static struct cst *create_number(char **expr)
+struct cst *create_cst_number(char **expr)
 {
+    if (**expr == '\0')
+        return NULL;
+
     char *save = *expr;
     int found = 0;
     int value = 0;
@@ -28,14 +31,19 @@ static struct cst *create_number(char **expr)
 
 static struct cst *create_expr(char **expr)
 {
-    char *save = *expr;
-    struct cst *cst = create_number(expr);
-
-    if (!cst) {
-        *expr = save;
+    if (**expr == '\0')
         return NULL;
-    }
-    return cst;
+
+    char *save = *expr;
+    struct cst *cst = create_cst_operation(expr);
+
+    if (cst)
+        return cst;
+    cst = create_cst_number(expr);
+    if (cst)
+        return cst;
+    *expr = save;
+    return NULL;
 }
 
 struct cst *create_cst(char *expr)
