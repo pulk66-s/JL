@@ -1,8 +1,10 @@
+use std::vec;
+
 use either::Either::{self, Left, Right};
 
-use crate::cst::data::{CstAtom, CstBinop, CstNode};
+use crate::cst::data::{CstAtom, CstBinop, CstFunctionDecl, CstFunctionDeclArgs, CstNode};
 
-use super::data::{AstBinop, AstNode, Binop};
+use super::data::{AstBinop, AstFunctionDecl, AstFunctionDeclArg, AstNode, AstType, Binop};
 
 fn create_ast_from_atom(atom: CstAtom) -> Either<&'static str, AstNode> {
     match atom {
@@ -28,7 +30,7 @@ fn convert_values(values: Box<Vec<CstNode>>) -> Either<&'static str, Vec<AstNode
     for value in ast_values {
         match value {
             Right(ast) => unpacked_values.push(ast),
-            Left(err) => return Left(err)
+            Left(err) => return Left(err),
         }
     }
     Right(unpacked_values)
@@ -41,15 +43,58 @@ fn create_ast_from_binop(binop: CstBinop) -> Either<&'static str, AstNode> {
             values: match convert_values(binop.values) {
                 Right(v) => Box::new(v),
                 Left(err) => return Left(err),
-            }
+            },
         })),
         None => return Left("Unknown operator."),
     }
+}
+
+fn create_ast_function_decl_args(
+    args: CstFunctionDeclArgs,
+) -> Either<&'static str, Vec<AstFunctionDeclArg>> {
+    let mut ast_args = vec![];
+
+    for arg in args.arg_chains {
+        ast_args.push(AstFunctionDeclArg {
+            arg_type: AstType::Number,
+            name: match arg.name {
+                CstAtom::IDENTIFIER(name) => name,
+                _ => return Left("Function argument name must be an identifier."),
+            },
+        });
+    }
+    ast_args.push(AstFunctionDeclArg {
+        arg_type: AstType::Number,
+        name: match args.last_arg.name {
+            CstAtom::IDENTIFIER(name) => name,
+            _ => return Left("Function argument name must be an identifier."),
+        },
+    });
+    Right(ast_args)
+}
+
+fn create_ast_function_decl(decl: CstFunctionDecl) -> Either<&'static str, AstNode> {
+    Right(AstNode::FunctionDecl(AstFunctionDecl {
+        name: match decl.name {
+            CstAtom::IDENTIFIER(name) => name,
+            _ => return Left("Function name must be an identifier."),
+        },
+        args: match decl.args {
+            Some(args) => match create_ast_function_decl_args(args) {
+                Right(a) => a,
+                Left(err) => return Left(err),
+            },
+            None => vec![],
+        },
+        return_type: AstType::Number,
+    }))
 }
 
 pub fn create_ast(cst: CstNode) -> Either<&'static str, AstNode> {
     match cst {
         CstNode::ATOM(atom) => create_ast_from_atom(atom),
         CstNode::BINOP(binop) => create_ast_from_binop(binop),
+        CstNode::FUNCTION_DECL(decl) => create_ast_function_decl(decl),
+        CstNode::FUNCTION_CALL(_) => Left("Function calls are not supported."),
     }
 }

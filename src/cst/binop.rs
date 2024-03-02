@@ -3,7 +3,7 @@ use either::Either::{self, Left, Right};
 use super::{
     char::{create_cst_add_atom, create_cst_div_atom, create_cst_mul_atom, create_cst_sub_atom}, data::{
         CstAtom, CstBinop, CstNode
-    }, expr::create_cst_value_expr, number::create_cst_number, string::create_cst_spaces
+    }, expr::create_cst_value_expr, number::create_cst_number, keyword::create_cst_spaces
 };
 
 fn create_binop_chained(
@@ -12,15 +12,14 @@ fn create_binop_chained(
 ) -> (Vec<CstNode>, &str) {
     let mut nodes = vec![];
     let mut new_expr = expr;
-    let mut number = CstAtom::NUMBER(0.0);
-    let mut op_atom = ' ';
+    let mut number;
 
     loop {
         (_, new_expr) = match create_cst_spaces(new_expr) {
             Left(_) => break,
             Right(r) => r
         };
-        (op_atom, new_expr) = match atom_parse(new_expr) {
+        (_, new_expr) = match atom_parse(new_expr) {
             Left(_) => break,
             Right((CstAtom::CHAR(c), new_expr)) => (c, new_expr),
             Right(_) => break

@@ -2,7 +2,7 @@ use std::io::Write;
 
 use either::Either::{Left, Right};
 
-use crate::{ast::create::create_ast, cst::create::create_cst_from_string, eval::expr::eval_expr};
+use crate::{ast::create::create_ast, cst::create::create_cst_from_string, eval::{env::data::Env, expr::eval_expr}};
 
 fn get_input() -> String {
     let mut input = String::new();
@@ -28,14 +28,16 @@ fn eval_command(cmd: &str) {
         },
     };
     println!("AST: {:?}", ast);
-    let eval: f64 = match eval_expr(ast) {
+    let mut env = Env::new();
+    let (eval, env) = match eval_expr(ast, &mut env) {
         Left(err) => {
             println!("Eval Error: {}", err);
             return;
         },
-        Right(eval) => eval,
+        Right(r) => r,
     };
     println!("{}", eval);
+    println!("env: {:?}", env);
 }
 
 pub fn check_command(input: &str) {

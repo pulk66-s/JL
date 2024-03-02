@@ -28,3 +28,15 @@ pub fn create_cst_div_atom(expr: &str) -> Either<&str, (CstAtom, &str)> {
 pub fn create_cst_endexpr_atom(expr: &str) -> Either<&str, (CstAtom, &str)> {
     create_cst_char_atom(expr, ';')
 }
+
+pub fn create_cst_comma_atom(expr: &str) -> Either<&str, (CstAtom, &str)> {
+    create_cst_char_atom(expr, ',')
+}
+
+pub fn create_cst_openpar_atom(expr: &str) -> Either<&str, (CstAtom, &str)> {
+    create_cst_char_atom(expr, '(')
+}
+
+pub fn create_cst_closepar_atom(expr: &str) -> Either<&str, (CstAtom, &str)> {
+    create_cst_char_atom(expr, ')')
+}
