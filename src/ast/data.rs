@@ -1,4 +1,4 @@
-#[derive(Debug)]
+#[derive(Debug, PartialEq, Clone)]
 pub enum Binop {
     Add,
     Sub,
@@ -6,14 +6,13 @@ pub enum Binop {
     Div,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct AstBinop {
-    pub left: Box<AstNode>,
     pub op: Binop,
-    pub right: Box<AstNode>,
+    pub values: Box<Vec<AstNode>>,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum AstNode {
     Binop(AstBinop),
     Number(f64)

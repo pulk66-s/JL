@@ -14,6 +14,5 @@ pub enum CstNode {
 #[derive(Debug)]
 pub struct CstBinop {
     pub op: char,
-    pub left: Box<CstNode>,
-    pub right: Box<CstNode>,
+    pub values: Box<Vec<CstNode>>
 }

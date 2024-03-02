@@ -3,19 +3,30 @@ use either::Either;
 use crate::ast::data::{AstBinop, AstNode, Binop};
 
 pub fn eval_ast_binop(binop: AstBinop) -> Either<&'static str, f64> {
-    let left = eval_expr(*binop.left);
-    let right = eval_expr(*binop.right);
+    let values = binop.values;
+    let calc_function = match binop.op {
+        Binop::Add => |a, b| a + b,
+        Binop::Sub => |a, b| a - b,
+        Binop::Mul => |a, b| a * b,
+        Binop::Div => |a, b| a / b,
+    };
+    let cloned_first_value = values[0].clone();
+    let mut result = match eval_expr(cloned_first_value) {
+        Either::Right(v) => v,
+        Either::Left(err) => return Either::Left(err),
+    };
 
-    match (left, right) {
-        (Either::Right(left), Either::Right(right)) => match binop.op {
-            Binop::Add => Either::Right(left + right),
-            Binop::Sub => Either::Right(left - right),
-            Binop::Mul => Either::Right(left * right),
-            Binop::Div => Either::Right(left / right),
-        },
-        (Either::Right(_), Either::Left(err)) => Either::Left(err),
-        (Either::Left(err), _) => Either::Left(err),
+    for (i, value) in values.into_iter().enumerate() {
+        if i == 0 {
+            continue;
+        }
+        let value = match eval_expr(value) {
+            Either::Right(v) => v,
+            Either::Left(err) => return Either::Left(err),
+        };
+        result = calc_function(result, value);
     }
+    Either::Right(result)
 }
 
 pub fn eval_expr(ast: AstNode) -> Either<&'static str, f64> {

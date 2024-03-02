@@ -5,7 +5,7 @@ use super::data::CstAtom;
 fn create_cst_char_atom(expr: &str, c: char) -> Either<&str, (CstAtom, &str)> {
     match expr.chars().next() {
         Some(ch) if ch == c => Right((CstAtom::CHAR(c), &expr[1..])),
-        _ => Left(expr)
+        _ => Left("Expected a char atom")
     }
 }
 

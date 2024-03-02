@@ -4,35 +4,50 @@ use crate::cst::data::{CstAtom, CstBinop, CstNode};
 
 use super::data::{AstBinop, AstNode, Binop};
 
-fn create_ast_from_atom(atom: CstAtom) -> Either<AstNode, &'static str> {
+fn create_ast_from_atom(atom: CstAtom) -> Either<&'static str, AstNode> {
     match atom {
-        CstAtom::NUMBER(n) => Left(AstNode::Number(n)),
-        _ => Right("Unknown atom."),
+        CstAtom::NUMBER(n) => Right(AstNode::Number(n)),
+        _ => Left("Unknown atom."),
     }
 }
 
-fn create_ast_from_binop(binop: CstBinop) -> Either<AstNode, &'static str> {
-    let left = create_ast(*binop.left);
-    let right = create_ast(*binop.right);
+fn convert_op_sign(op: char) -> Option<Binop> {
+    match op {
+        '+' => Some(Binop::Add),
+        '-' => Some(Binop::Sub),
+        '*' => Some(Binop::Mul),
+        '/' => Some(Binop::Div),
+        _ => None,
+    }
+}
 
-    match (left, right) {
-        (Left(left), Left(right)) => Left(AstNode::Binop(AstBinop {
-            left: Box::new(left),
-            op: match binop.op {
-                '+' => Binop::Add,
-                '-' => Binop::Sub,
-                '*' => Binop::Mul,
-                '/' => Binop::Div,
-                _ => return Right("Unknown operator."),
-            },
-            right: Box::new(right),
+fn convert_values(values: Box<Vec<CstNode>>) -> Either<&'static str, Vec<AstNode>> {
+    let ast_values = values.into_iter().map(|v| create_ast(v));
+    let mut unpacked_values = Vec::new();
+
+    for value in ast_values {
+        match value {
+            Right(ast) => unpacked_values.push(ast),
+            Left(err) => return Left(err)
+        }
+    }
+    Right(unpacked_values)
+}
+
+fn create_ast_from_binop(binop: CstBinop) -> Either<&'static str, AstNode> {
+    match convert_op_sign(binop.op) {
+        Some(op) => Right(AstNode::Binop(AstBinop {
+            op: op,
+            values: match convert_values(binop.values) {
+                Right(v) => Box::new(v),
+                Left(err) => return Left(err),
+            }
         })),
-        (Left(_), Right(err)) => Right(err),
-        (Right(err), _) => Right(err),
+        None => return Left("Unknown operator."),
     }
 }
 
-pub fn create_ast(cst: CstNode) -> Either<AstNode, &'static str> {
+pub fn create_ast(cst: CstNode) -> Either<&'static str, AstNode> {
     match cst {
         CstNode::ATOM(atom) => create_ast_from_atom(atom),
         CstNode::BINOP(binop) => create_ast_from_binop(binop),

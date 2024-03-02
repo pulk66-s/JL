@@ -14,23 +14,23 @@ fn eval_command(cmd: &str) {
     println!("Evaluating command: {}", cmd);
     let (cst, _) = match create_cst_from_string(cmd) {
         Left(err) => {
-            println!("Error: {}", err);
+            println!("CST Error: {}", err);
             return;
         },
         Right(cst) => cst,
     };
     println!("CST: {:?}", cst);
     let ast = match create_ast(cst) {
-        Left(ast) => ast,
-        Right(err) => {
-            println!("Error: {}", err);
+        Right(ast) => ast,
+        Left(err) => {
+            println!("AST Error: {}", err);
             return;
         },
     };
     println!("AST: {:?}", ast);
-    let eval = match eval_expr(ast) {
+    let eval: f64 = match eval_expr(ast) {
         Left(err) => {
-            println!("Error: {}", err);
+            println!("Eval Error: {}", err);
             return;
         },
         Right(eval) => eval,
