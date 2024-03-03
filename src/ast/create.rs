@@ -14,12 +14,23 @@ fn create_ast_from_atom(atom: CstAtom) -> Either<&'static str, AstNode> {
     }
 }
 
-fn convert_op_sign(op: char) -> Option<Binop> {
+fn convert_op_sign(op: CstAtom) -> Option<Binop> {
     match op {
-        '+' => Some(Binop::Add),
-        '-' => Some(Binop::Sub),
-        '*' => Some(Binop::Mul),
-        '/' => Some(Binop::Div),
+        CstAtom::CHAR(op) => match op {
+            '+' => Some(Binop::Add),
+            '-' => Some(Binop::Sub),
+            '*' => Some(Binop::Mul),
+            '/' => Some(Binop::Div),
+            _ => None,
+        },
+        CstAtom::KEYWORD(op) => match op.as_str() {
+            "==" => Some(Binop::Eq),
+            ">=" => Some(Binop::Ge),
+            "<=" => Some(Binop::Le),
+            ">" => Some(Binop::Gt),
+            "<" => Some(Binop::Lt),
+            _ => None,
+        },
         _ => None,
     }
 }

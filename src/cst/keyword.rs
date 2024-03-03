@@ -68,3 +68,38 @@ pub fn create_cst_variable_decl_keyword(expr: &str) -> Either<&str, (CstAtom, &s
         false => Either::Left("Expected a variable declaration"),
     }
 }
+
+pub fn create_cst_equals_keyword(expr: &str) -> Either<&str, (CstAtom, &str)> {
+    match check_keyword(expr, "==") {
+        true => Right((CstAtom::KEYWORD("==".to_string()), &expr[2..])),
+        false => Either::Left("Expected an equals keyword"),
+    }
+}
+
+pub fn create_cst_ge_keyword(expr: &str) -> Either<&str, (CstAtom, &str)> {
+    match check_keyword(expr, ">=") {
+        true => Right((CstAtom::KEYWORD(">=".to_string()), &expr[2..])),
+        false => Either::Left("Expected a greater than or equal keyword"),
+    }
+}
+
+pub fn create_cst_gt_keyword(expr: &str) -> Either<&str, (CstAtom, &str)> {
+    match check_keyword(expr, ">") {
+        true => Right((CstAtom::KEYWORD(">".to_string()), &expr[1..])),
+        false => Either::Left("Expected a greater than keyword"),
+    }
+}
+
+pub fn create_cst_le_keyword(expr: &str) -> Either<&str, (CstAtom, &str)> {
+    match check_keyword(expr, "<=") {
+        true => Right((CstAtom::KEYWORD("<=".to_string()), &expr[2..])),
+        false => Either::Left("Expected a less than or equal keyword"),
+    }
+}
+
+pub fn create_cst_lt_keyword(expr: &str) -> Either<&str, (CstAtom, &str)> {
+    match check_keyword(expr, "<") {
+        true => Right((CstAtom::KEYWORD("<".to_string()), &expr[1..])),
+        false => Either::Left("Expected a less than keyword"),
+    }
+}

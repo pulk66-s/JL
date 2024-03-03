@@ -4,6 +4,11 @@ pub enum Binop {
     Sub,
     Mul,
     Div,
+    Eq,
+    Gt,
+    Ge,
+    Lt,
+    Le,
 }
 
 #[derive(Debug, Clone)]
@@ -14,7 +19,7 @@ pub struct AstBinop {
 
 #[derive(Debug, Clone)]
 pub enum AstType {
-    Number
+    Number,
 }
 
 #[derive(Debug, Clone)]
@@ -56,7 +61,6 @@ pub enum AstNode {
     Number(f64),
     Identifier(String),
     FunctionDecl(AstFunctionDecl),
-    FunctionLine(AstFunctionLine),
     FunctionCall(AstFunctionCall),
     VariableDecl(AstVariableDecl),
 }

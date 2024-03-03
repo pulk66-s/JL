@@ -103,6 +103,6 @@ pub struct CstFunctionDecl {
 
 #[derive(Debug)]
 pub struct CstBinop {
-    pub op: char,
+    pub op: CstAtom,
     pub values: Box<Vec<CstNode>>
 }
