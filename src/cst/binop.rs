@@ -3,7 +3,7 @@ use either::Either::{self, Left, Right};
 use super::{
     char::{create_cst_add_atom, create_cst_div_atom, create_cst_mul_atom, create_cst_sub_atom}, data::{
         CstAtom, CstBinop, CstNode
-    }, expr::create_cst_value_expr, number::create_cst_number, keyword::create_cst_spaces
+    }, expr::create_cst_atom_value_expr, number::create_cst_number, keyword::create_cst_spaces
 };
 
 fn create_binop_chained(
@@ -59,7 +59,7 @@ fn create_binop(
         Left(err) => return Left(err),
         Right(r) => r
     };
-    let (right_number, new_expr) = match create_cst_value_expr(new_expr) {
+    let (right_number, new_expr) = match create_cst_atom_value_expr(new_expr) {
         Left(err) => return Left(err),
         Right(r) => r
     };

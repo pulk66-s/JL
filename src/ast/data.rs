@@ -28,11 +28,19 @@ pub struct AstFunctionDecl {
     pub name: String,
     pub args: Vec<AstFunctionDeclArg>,
     pub return_type: AstType,
+    pub body: Vec<AstNode>,
+}
+
+#[derive(Debug, Clone)]
+pub enum AstFunctionLine {
+    Line(Box<AstNode>),
+    Return(Box<AstNode>),
 }
 
 #[derive(Debug, Clone)]
 pub enum AstNode {
     Binop(AstBinop),
     Number(f64),
-    FunctionDecl(AstFunctionDecl)
+    FunctionDecl(AstFunctionDecl),
+    FunctionLine(AstFunctionLine),
 }

@@ -45,5 +45,6 @@ pub fn eval_expr(ast: AstNode, env: &mut Env) -> Either<&'static str, (f64, &mut
         AstNode::Number(n) => Either::Right((n, env)),
         AstNode::Binop(binop) => eval_ast_binop(binop, env),
         AstNode::FunctionDecl(decl) => eval_function_decl(decl, env),
+        AstNode::FunctionLine(_) => Either::Right((0.0, env))
     }
 }

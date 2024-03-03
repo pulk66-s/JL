@@ -11,7 +11,8 @@ pub enum CstNode {
     ATOM(CstAtom),
     BINOP(CstBinop),
     FUNCTION_DECL(CstFunctionDecl),
-    FUNCTION_CALL(CstFunctionCall)
+    FUNCTION_CALL(CstFunctionCall),
+    FUNCTION_LINE_EXPR(CstFunctionLineExpr)
 }
 
 #[derive(Debug)]
@@ -54,6 +55,29 @@ pub struct CstFunctionDeclArgs {
 }
 
 #[derive(Debug)]
+pub struct CstLine {
+    pub expr: Box<CstNode>,
+}
+
+#[derive(Debug)]
+pub struct CstReturnExpr {
+    pub keyword: CstAtom,
+    pub value: Box<CstNode>
+}
+
+#[derive(Debug)]
+pub enum CstFunctionLineExpr {
+    LINE(CstLine),
+    RETURN(CstReturnExpr)
+}
+
+#[derive(Debug)]
+pub struct CstFunctionLine {
+    pub expr: CstFunctionLineExpr,
+    pub endline: CstAtom
+}
+
+#[derive(Debug)]
 pub struct CstFunctionDecl {
     pub keyword: CstAtom,
     pub open_par: CstAtom,
@@ -62,6 +86,9 @@ pub struct CstFunctionDecl {
     pub close_par: CstAtom,
     pub return_arrow: CstAtom,
     pub return_type: CstAtom,
+    pub open_brace: CstAtom,
+    pub body: Vec<CstFunctionLine>,
+    pub close_brace: CstAtom
 }
 
 #[derive(Debug)]

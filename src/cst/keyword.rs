@@ -52,3 +52,10 @@ pub fn create_cst_function_return_arrow(expr: &str) -> Either<&str, (CstAtom, &s
         false => Either::Left("Expected a function return arrow")
     }
 }
+
+pub fn create_cst_return_keyword(expr: &str) -> Either<&str, (CstAtom, &str)> {
+    match check_keyword(expr, "return") {
+        true => Right((CstAtom::KEYWORD("return".to_string()), &expr[6..])),
+        false => Either::Left("Expected a return keyword")
+    }
+}
