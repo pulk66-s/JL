@@ -38,9 +38,16 @@ pub enum AstFunctionLine {
 }
 
 #[derive(Debug, Clone)]
+pub struct AstFunctionCall {
+    pub name: String,
+    pub args: Vec<AstNode>,
+}
+
+#[derive(Debug, Clone)]
 pub enum AstNode {
     Binop(AstBinop),
     Number(f64),
     FunctionDecl(AstFunctionDecl),
     FunctionLine(AstFunctionLine),
+    FunctionCall(AstFunctionCall),
 }

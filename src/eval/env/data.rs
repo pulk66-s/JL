@@ -1,6 +1,9 @@
-#[derive(Debug)]
+use crate::ast::data::AstNode;
+
+#[derive(Debug, Clone)]
 pub struct EnvFunction {
-    pub name: String
+    pub name: String,
+    pub body: Vec<AstNode>
 }
 
 #[derive(Debug)]
@@ -14,13 +17,20 @@ pub struct Env {
 }
 
 impl EnvFunctions {
-    pub fn exists(&self, name: &str) -> bool {
+    pub fn get_function(&self, name: String) -> Option<&EnvFunction> {
         for function in &self.functions {
             if function.name == name {
-                return true;
+                return Some(function);
             }
         }
-        return false;
+        return None;
+    }
+
+    pub fn add_function(&mut self, name: String, body: Vec<AstNode>) {
+        self.functions.push(EnvFunction {
+            name: name,
+            body: body
+        });
     }
 }
 
@@ -31,11 +41,5 @@ impl Env {
                 functions: vec![]
             }
         };
-    }
-
-    pub fn add_function(&mut self, name: String) {
-        self.functions.functions.push(EnvFunction {
-            name: name
-        });
     }
 }

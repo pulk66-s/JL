@@ -18,7 +18,7 @@ pub enum CstNode {
 #[derive(Debug)]
 pub struct CstFunctionCallArgChain {
     pub arg: Box<CstNode>,
-    pub comma: char
+    pub comma: CstAtom
 }
 
 #[derive(Debug)]
@@ -31,7 +31,7 @@ pub struct CstFunctionCallArgs {
 pub struct CstFunctionCall {
     pub name: CstAtom,
     pub open_par: CstAtom,
-    pub args: Vec<CstFunctionCallArgs>,
+    pub args: Option<CstFunctionCallArgs>,
     pub close_par: CstAtom,
 }
 

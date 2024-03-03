@@ -10,7 +10,7 @@ fn get_input() -> String {
     input
 }
 
-fn eval_command(cmd: &str) {
+fn eval_command(cmd: &str, env: &mut Env) {
     println!("Evaluating command: {}", cmd);
     let (cst, _) = match create_cst_from_string(cmd) {
         Left(err) => {
@@ -28,8 +28,7 @@ fn eval_command(cmd: &str) {
         },
     };
     println!("AST: {:?}", ast);
-    let mut env = Env::new();
-    let (eval, env) = match eval_expr(ast, &mut env) {
+    let (eval, env) = match eval_expr(ast, env) {
         Left(err) => {
             println!("Eval Error: {}", err);
             return;
@@ -40,20 +39,22 @@ fn eval_command(cmd: &str) {
     println!("env: {:?}", env);
 }
 
-pub fn check_command(input: &str) {
+pub fn check_command(input: &str, env: &mut Env) {
     match input {
         "exit" => std::process::exit(0),
-        cmd => eval_command(cmd)
+        cmd => eval_command(cmd, env)
     }
 }
 
 pub fn launch_tty() {
+    let mut env = Env::new();
+
     println!("Launching terminal...");
     loop {
         print!("> ");
         std::io::stdout().flush().unwrap();
         let input = get_input();
         println!("You entered: {}", input.trim());
-        check_command(input.trim());
+        check_command(input.trim(), &mut env);
     }
 }

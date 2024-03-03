@@ -2,9 +2,9 @@ use std::vec;
 
 use either::Either::{self, Left, Right};
 
-use crate::cst::data::{CstAtom, CstBinop, CstFunctionDecl, CstFunctionDeclArgs, CstFunctionLine, CstFunctionLineExpr, CstNode};
+use crate::cst::data::{CstAtom, CstBinop, CstFunctionCall, CstFunctionDecl, CstFunctionDeclArgs, CstFunctionLine, CstFunctionLineExpr, CstNode};
 
-use super::data::{AstBinop, AstFunctionDecl, AstFunctionDeclArg, AstNode, AstType, Binop};
+use super::data::{AstBinop, AstFunctionCall, AstFunctionDecl, AstFunctionDeclArg, AstNode, AstType, Binop};
 
 fn create_ast_from_atom(atom: CstAtom) -> Either<&'static str, AstNode> {
     match atom {
@@ -119,12 +119,40 @@ fn create_ast_function_line_expr(line: CstFunctionLineExpr) -> Either<&'static s
     }
 }
 
+fn create_ast_function_call(call: CstFunctionCall) -> Either<&'static str, AstNode> {
+    let name = match call.name {
+        CstAtom::IDENTIFIER(name) => name,
+        _ => return Left("Function name must be an identifier."),
+    };
+    let mut ast_args = vec![];
+
+    match call.args {
+        None => (),
+        Some(args) => {
+            for arg in args.arg_chain {
+                match create_ast(*arg.arg) {
+                    Right(ast) => ast_args.push(ast),
+                    Left(err) => return Left(err),
+                }
+            }
+            match create_ast(*args.last_arg) {
+                Right(ast) => ast_args.push(ast),
+                Left(err) => return Left(err),
+            }
+        }
+    }
+    Right(AstNode::FunctionCall(AstFunctionCall { 
+        name: name,
+        args: ast_args,
+    }))
+}
+
 pub fn create_ast(cst: CstNode) -> Either<&'static str, AstNode> {
     match cst {
         CstNode::ATOM(atom) => create_ast_from_atom(atom),
         CstNode::BINOP(binop) => create_ast_from_binop(binop),
         CstNode::FUNCTION_DECL(decl) => create_ast_function_decl(decl),
-        CstNode::FUNCTION_CALL(_) => Left("Function calls are not supported."),
+        CstNode::FUNCTION_CALL(call) => create_ast_function_call(call),
         CstNode::FUNCTION_LINE_EXPR(line) => create_ast_function_line_expr(line),
     }
 }
