@@ -12,7 +12,17 @@ pub enum CstNode {
     BINOP(CstBinop),
     FUNCTION_DECL(CstFunctionDecl),
     FUNCTION_CALL(CstFunctionCall),
-    FUNCTION_LINE_EXPR(CstFunctionLineExpr)
+    FUNCTION_LINE_EXPR(CstFunctionLineExpr),
+    VARIABLE_DECL(CstVariableDecl)
+}
+
+#[derive(Debug)]
+pub struct CstVariableDecl {
+    pub keyword: CstAtom,
+    pub var_type: CstAtom,
+    pub name: CstAtom,
+    pub equal: CstAtom,
+    pub value: Box<CstNode>
 }
 
 #[derive(Debug)]

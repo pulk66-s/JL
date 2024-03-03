@@ -8,3 +8,5 @@ pub mod char;
 pub mod function_call;
 pub mod function_decl;
 pub mod function_body;
+pub mod variable_decl;
+pub mod variable;

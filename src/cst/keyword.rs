@@ -10,7 +10,7 @@ pub fn create_cst_spaces(expr: &str) -> Either<&str, (CstAtom, &str)> {
 
         match first_char {
             Some(' ') => new_expr = &new_expr[1..],
-            _ => return Right((CstAtom::CHAR(' '), new_expr))
+            _ => return Right((CstAtom::CHAR(' '), new_expr)),
         }
     }
 }
@@ -22,7 +22,7 @@ fn check_keyword(expr: &str, keyword: &str) -> bool {
 pub fn create_cst_function_decl_keyword(expr: &str) -> Either<&str, (CstAtom, &str)> {
     match check_keyword(expr, "fn") {
         true => Right((CstAtom::KEYWORD("fn".to_string()), &expr[2..])),
-        false => Either::Left("Expected a function declaration")
+        false => Either::Left("Expected a function declaration"),
     }
 }
 
@@ -37,11 +37,11 @@ pub fn create_cst_identifier(expr: &str) -> Either<&str, (CstAtom, &str)> {
             Some(ch) if ch.is_alphabetic() => {
                 identifier.push(ch);
                 new_expr = &new_expr[1..];
-            },
+            }
             _ => match identifier.len() {
                 0 => return Either::Left("Expected an identifier"),
-                _ => return Right((CstAtom::IDENTIFIER(identifier), new_expr))
-            }
+                _ => return Right((CstAtom::IDENTIFIER(identifier), new_expr)),
+            },
         }
     }
 }
@@ -49,13 +49,20 @@ pub fn create_cst_identifier(expr: &str) -> Either<&str, (CstAtom, &str)> {
 pub fn create_cst_function_return_arrow(expr: &str) -> Either<&str, (CstAtom, &str)> {
     match check_keyword(expr, "->") {
         true => Right((CstAtom::CHAR('-'), &expr[2..])),
-        false => Either::Left("Expected a function return arrow")
+        false => Either::Left("Expected a function return arrow"),
     }
 }
 
 pub fn create_cst_return_keyword(expr: &str) -> Either<&str, (CstAtom, &str)> {
     match check_keyword(expr, "return") {
         true => Right((CstAtom::KEYWORD("return".to_string()), &expr[6..])),
-        false => Either::Left("Expected a return keyword")
+        false => Either::Left("Expected a return keyword"),
+    }
+}
+
+pub fn create_cst_variable_decl_keyword(expr: &str) -> Either<&str, (CstAtom, &str)> {
+    match check_keyword(expr, "let") {
+        true => Right((CstAtom::KEYWORD("let".to_string()), &expr[3..])),
+        false => Either::Left("Expected a variable declaration"),
     }
 }

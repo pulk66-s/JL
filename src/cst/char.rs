@@ -48,3 +48,7 @@ pub fn create_cst_openbrace_atom(expr: &str) -> Either<&str, (CstAtom, &str)> {
 pub fn create_cst_closebrace_atom(expr: &str) -> Either<&str, (CstAtom, &str)> {
     create_cst_char_atom(expr, '}')
 }
+
+pub fn create_cst_equal_atom(expr: &str) -> Either<&str, (CstAtom, &str)> {
+    create_cst_char_atom(expr, '=')
+}

@@ -2,14 +2,15 @@ use std::vec;
 
 use either::Either::{self, Left, Right};
 
-use crate::cst::data::{CstAtom, CstBinop, CstFunctionCall, CstFunctionDecl, CstFunctionDeclArgs, CstFunctionLine, CstFunctionLineExpr, CstNode};
+use crate::cst::data::{CstAtom, CstBinop, CstFunctionCall, CstFunctionDecl, CstFunctionDeclArgs, CstFunctionLine, CstFunctionLineExpr, CstNode, CstVariableDecl};
 
-use super::data::{AstBinop, AstFunctionCall, AstFunctionDecl, AstFunctionDeclArg, AstNode, AstType, Binop};
+use super::data::{AstBinop, AstFunctionCall, AstFunctionDecl, AstFunctionDeclArg, AstNode, AstType, AstVariableDecl, Binop};
 
 fn create_ast_from_atom(atom: CstAtom) -> Either<&'static str, AstNode> {
     match atom {
         CstAtom::NUMBER(n) => Right(AstNode::Number(n)),
-        _ => Left("Unknown atom."),
+        CstAtom::IDENTIFIER(name) => Right(AstNode::Identifier(name)),
+        _ => Left("Unknown atom"),
     }
 }
 
@@ -58,7 +59,7 @@ fn create_ast_function_decl_args(
         ast_args.push(AstFunctionDeclArg {
             arg_type: AstType::Number,
             name: match arg.name {
-                CstAtom::IDENTIFIER(name) => name,
+                CstAtom::IDENTIFIER(name) => Box::new(AstNode::Identifier(name)),
                 _ => return Left("Function argument name must be an identifier."),
             },
         });
@@ -66,7 +67,7 @@ fn create_ast_function_decl_args(
     ast_args.push(AstFunctionDeclArg {
         arg_type: AstType::Number,
         name: match args.last_arg.name {
-            CstAtom::IDENTIFIER(name) => name,
+            CstAtom::IDENTIFIER(name) => Box::new(AstNode::Identifier(name)),
             _ => return Left("Function argument name must be an identifier."),
         },
     });
@@ -94,7 +95,7 @@ fn create_ast_function_body(body: Vec<CstFunctionLine>) -> Either<&'static str, 
 fn create_ast_function_decl(decl: CstFunctionDecl) -> Either<&'static str, AstNode> {
     Right(AstNode::FunctionDecl(AstFunctionDecl {
         name: match decl.name {
-            CstAtom::IDENTIFIER(name) => name,
+            CstAtom::IDENTIFIER(name) => Box::new(AstNode::Identifier(name)),
             _ => return Left("Function name must be an identifier."),
         },
         args: match decl.args {
@@ -142,8 +143,26 @@ fn create_ast_function_call(call: CstFunctionCall) -> Either<&'static str, AstNo
         }
     }
     Right(AstNode::FunctionCall(AstFunctionCall { 
-        name: name,
+        name: Box::new(AstNode::Identifier(name)),
         args: ast_args,
+    }))
+}
+
+fn create_ast_variable_decl(decl: CstVariableDecl) -> Either<&'static str, AstNode> {
+    let var_type = AstType::Number;
+    let name = match decl.name {
+        CstAtom::IDENTIFIER(name) => name,
+        _ => return Left("Variable name must be an identifier."),
+    };
+    let value = match create_ast(*decl.value) {
+        Right(ast) => ast,
+        Left(err) => return Left(err),
+    };
+
+    Right(AstNode::VariableDecl(AstVariableDecl {
+        var_type: var_type,
+        name: Box::new(AstNode::Identifier(name)),
+        value: Box::new(value),
     }))
 }
 
@@ -154,5 +173,6 @@ pub fn create_ast(cst: CstNode) -> Either<&'static str, AstNode> {
         CstNode::FUNCTION_DECL(decl) => create_ast_function_decl(decl),
         CstNode::FUNCTION_CALL(call) => create_ast_function_call(call),
         CstNode::FUNCTION_LINE_EXPR(line) => create_ast_function_line_expr(line),
+        CstNode::VARIABLE_DECL(decl) => create_ast_variable_decl(decl),
     }
 }

@@ -20,12 +20,12 @@ pub enum AstType {
 #[derive(Debug, Clone)]
 pub struct AstFunctionDeclArg {
     pub arg_type: AstType,
-    pub name: String,
+    pub name: Box<AstNode>,
 }
 
 #[derive(Debug, Clone)]
 pub struct AstFunctionDecl {
-    pub name: String,
+    pub name: Box<AstNode>,
     pub args: Vec<AstFunctionDeclArg>,
     pub return_type: AstType,
     pub body: Vec<AstNode>,
@@ -39,15 +39,24 @@ pub enum AstFunctionLine {
 
 #[derive(Debug, Clone)]
 pub struct AstFunctionCall {
-    pub name: String,
+    pub name: Box<AstNode>,
     pub args: Vec<AstNode>,
+}
+
+#[derive(Debug, Clone)]
+pub struct AstVariableDecl {
+    pub var_type: AstType,
+    pub name: Box<AstNode>,
+    pub value: Box<AstNode>,
 }
 
 #[derive(Debug, Clone)]
 pub enum AstNode {
     Binop(AstBinop),
     Number(f64),
+    Identifier(String),
     FunctionDecl(AstFunctionDecl),
     FunctionLine(AstFunctionLine),
     FunctionCall(AstFunctionCall),
+    VariableDecl(AstVariableDecl),
 }
