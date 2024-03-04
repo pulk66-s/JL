@@ -2,9 +2,15 @@ use std::vec;
 
 use either::Either::{self, Left, Right};
 
-use crate::cst::data::{CstAtom, CstBinop, CstFunctionCall, CstFunctionDecl, CstFunctionDeclArgs, CstFunctionLine, CstFunctionLineExpr, CstNode, CstVariableDecl};
+use crate::cst::data::{
+    CstAtom, CstBinop, CstCondition, CstFunctionCall, CstFunctionDecl, CstFunctionDeclArgs,
+    CstFunctionLineExpr, CstNode, CstVariableDecl,
+};
 
-use super::data::{AstBinop, AstFunctionCall, AstFunctionDecl, AstFunctionDeclArg, AstNode, AstType, AstVariableDecl, Binop};
+use super::data::{
+    AstBinop, AstCondition, AstFunctionCall, AstFunctionDecl, AstFunctionDeclArg, AstNode, AstType,
+    AstVariableDecl, Binop,
+};
 
 fn create_ast_from_atom(atom: CstAtom) -> Either<&'static str, AstNode> {
     match atom {
@@ -85,11 +91,11 @@ fn create_ast_function_decl_args(
     Right(ast_args)
 }
 
-fn create_ast_function_body(body: Vec<CstFunctionLine>) -> Either<&'static str, Vec<AstNode>> {
+fn create_ast_function_body(body: Vec<CstFunctionLineExpr>) -> Either<&'static str, Vec<AstNode>> {
     let mut ast_body = vec![];
 
     for line in body {
-        match line.expr {
+        match line {
             CstFunctionLineExpr::LINE(line) => ast_body.push(match create_ast(*line.expr) {
                 Right(ast) => ast,
                 Left(err) => return Left(err),
@@ -98,6 +104,11 @@ fn create_ast_function_body(body: Vec<CstFunctionLine>) -> Either<&'static str, 
                 Right(ast) => ast,
                 Left(err) => return Left(err),
             }),
+            CstFunctionLineExpr::CONDITION(cond) => {
+                let s = "Condition not implemented yet.";
+
+                return Left(s);
+            }
         }
     }
     Right(ast_body)
@@ -128,6 +139,11 @@ fn create_ast_function_line_expr(line: CstFunctionLineExpr) -> Either<&'static s
     match line {
         CstFunctionLineExpr::LINE(line) => create_ast(*line.expr),
         CstFunctionLineExpr::RETURN(ret) => create_ast(*ret.value),
+        CstFunctionLineExpr::CONDITION(cond) => {
+            let s = "Condition not implemented yet.";
+
+            Left(s)
+        }
     }
 }
 
@@ -153,7 +169,7 @@ fn create_ast_function_call(call: CstFunctionCall) -> Either<&'static str, AstNo
             }
         }
     }
-    Right(AstNode::FunctionCall(AstFunctionCall { 
+    Right(AstNode::FunctionCall(AstFunctionCall {
         name: Box::new(AstNode::Identifier(name)),
         args: ast_args,
     }))
@@ -177,13 +193,46 @@ fn create_ast_variable_decl(decl: CstVariableDecl) -> Either<&'static str, AstNo
     }))
 }
 
+fn create_ast_condition(cond: CstCondition) -> Either<&'static str, AstNode> {
+    let condition = match create_ast(*cond.condition) {
+        Right(ast) => ast,
+        Left(err) => return Left(err),
+    };
+    let mut ast_body = vec![];
+    let cst_body = cond.body;
+
+    for line in cst_body {
+        match line {
+            CstFunctionLineExpr::LINE(line) => match create_ast(*line.expr) {
+                Right(ast) => ast_body.push(ast),
+                Left(err) => return Left(err),
+            },
+            CstFunctionLineExpr::RETURN(ret) => match create_ast(*ret.value) {
+                Right(ast) => ast_body.push(ast),
+                Left(err) => return Left(err),
+            },
+            CstFunctionLineExpr::CONDITION(cond) => {
+                let s = "Condition not implemented yet.";
+
+                return Left(s);
+            }
+        }
+    }
+    Right(AstNode::Condition(AstCondition {
+        condition: Box::new(condition),
+        body: ast_body,
+        else_condition: None,
+    }))
+}
+
 pub fn create_ast(cst: CstNode) -> Either<&'static str, AstNode> {
     match cst {
         CstNode::ATOM(atom) => create_ast_from_atom(atom),
         CstNode::BINOP(binop) => create_ast_from_binop(binop),
         CstNode::FUNCTION_DECL(decl) => create_ast_function_decl(decl),
         CstNode::FUNCTION_CALL(call) => create_ast_function_call(call),
-        CstNode::FUNCTION_LINE_EXPR(line) => create_ast_function_line_expr(line),
+        CstNode::FUNCTION_LINE(line) => create_ast_function_line_expr(line),
         CstNode::VARIABLE_DECL(decl) => create_ast_variable_decl(decl),
+        CstNode::CONDITION(cond) => create_ast_condition(cond),
     }
 }

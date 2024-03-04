@@ -12,8 +12,29 @@ pub enum CstNode {
     BINOP(CstBinop),
     FUNCTION_DECL(CstFunctionDecl),
     FUNCTION_CALL(CstFunctionCall),
-    FUNCTION_LINE_EXPR(CstFunctionLineExpr),
-    VARIABLE_DECL(CstVariableDecl)
+    FUNCTION_LINE(CstFunctionLineExpr),
+    VARIABLE_DECL(CstVariableDecl),
+    CONDITION(CstCondition),
+}
+
+#[derive(Debug)]
+pub struct CstElseCondition {
+    pub keyword: CstAtom,
+    pub open_brace: CstAtom,
+    pub body: Vec<CstFunctionLineExpr>,
+    pub close_brace: CstAtom
+}
+
+#[derive(Debug)]
+pub struct CstCondition {
+    pub keyword: CstAtom,
+    pub open_par: CstAtom,
+    pub condition: Box<CstNode>,
+    pub close_par: CstAtom,
+    pub open_brace: CstAtom,
+    pub body: Vec<CstFunctionLineExpr>,
+    pub close_brace: CstAtom,
+    pub else_condition: Option<CstElseCondition>
 }
 
 #[derive(Debug)]
@@ -67,24 +88,21 @@ pub struct CstFunctionDeclArgs {
 #[derive(Debug)]
 pub struct CstLine {
     pub expr: Box<CstNode>,
+    pub endline: CstAtom
 }
 
 #[derive(Debug)]
 pub struct CstReturnExpr {
     pub keyword: CstAtom,
-    pub value: Box<CstNode>
+    pub value: Box<CstNode>,
+    pub endline: CstAtom
 }
 
 #[derive(Debug)]
 pub enum CstFunctionLineExpr {
     LINE(CstLine),
+    CONDITION(CstCondition),
     RETURN(CstReturnExpr)
-}
-
-#[derive(Debug)]
-pub struct CstFunctionLine {
-    pub expr: CstFunctionLineExpr,
-    pub endline: CstAtom
 }
 
 #[derive(Debug)]
@@ -97,7 +115,7 @@ pub struct CstFunctionDecl {
     pub return_arrow: CstAtom,
     pub return_type: CstAtom,
     pub open_brace: CstAtom,
-    pub body: Vec<CstFunctionLine>,
+    pub body: Vec<CstFunctionLineExpr>,
     pub close_brace: CstAtom
 }
 

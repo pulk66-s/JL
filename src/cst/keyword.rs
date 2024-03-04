@@ -103,3 +103,24 @@ pub fn create_cst_lt_keyword(expr: &str) -> Either<&str, (CstAtom, &str)> {
         false => Either::Left("Expected a less than keyword"),
     }
 }
+
+pub fn create_cst_ne_keyword(expr: &str) -> Either<&str, (CstAtom, &str)> {
+    match check_keyword(expr, "!=") {
+        true => Right((CstAtom::KEYWORD("!=".to_string()), &expr[2..])),
+        false => Either::Left("Expected a not equal keyword"),
+    }
+}
+
+pub fn create_cst_if_keyword(expr: &str) -> Either<&str, (CstAtom, &str)> {
+    match check_keyword(expr, "if") {
+        true => Right((CstAtom::KEYWORD("if".to_string()), &expr[2..])),
+        false => Either::Left("Expected an if keyword"),
+    }
+}
+
+pub fn create_cst_else_keyword(expr: &str) -> Either<&str, (CstAtom, &str)> {
+    match check_keyword(expr, "else") {
+        true => Right((CstAtom::KEYWORD("else".to_string()), &expr[4..])),
+        false => Either::Left("Expected an else keyword"),
+    }
+}

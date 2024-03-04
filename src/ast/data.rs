@@ -56,6 +56,13 @@ pub struct AstVariableDecl {
 }
 
 #[derive(Debug, Clone)]
+pub struct AstCondition {
+    pub condition: Box<AstNode>,
+    pub body: Vec<AstNode>,
+    pub else_condition: Option<Box<AstCondition>>,
+}
+
+#[derive(Debug, Clone)]
 pub enum AstNode {
     Binop(AstBinop),
     Number(f64),
@@ -63,4 +70,5 @@ pub enum AstNode {
     FunctionDecl(AstFunctionDecl),
     FunctionCall(AstFunctionCall),
     VariableDecl(AstVariableDecl),
+    Condition(AstCondition)
 }

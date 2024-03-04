@@ -1,8 +1,8 @@
 use either::Either::{self, Left, Right};
 
-use crate::ast::data::{
-    AstBinop, AstFunctionCall, AstFunctionDecl, AstFunctionLine, AstNode, AstVariableDecl, Binop,
-};
+use crate::{ast::data::{
+    AstBinop, AstCondition, AstFunctionCall, AstFunctionDecl, AstFunctionLine, AstNode, AstVariableDecl, Binop
+}, main};
 
 use super::env::data::Env;
 
@@ -62,6 +62,24 @@ fn eval_function_line(
     }
 }
 
+fn eval_lines(
+    lines: Vec<AstNode>,
+    env: &mut Env,
+) -> Either<&'static str, (f64, &mut Env)> {
+    let mut result = 0.0;
+    let mut new_env = env;
+
+    for line in lines {
+        let (value, temp_env) = match eval_expr(line, new_env) {
+            Either::Right(v) => v,
+            Either::Left(err) => return Either::Left(err),
+        };
+        new_env = temp_env;
+        result = value;
+    }
+    Either::Right((result, new_env))
+}
+
 fn eval_function_call(
     call: AstFunctionCall,
     env: &mut Env,
@@ -74,19 +92,9 @@ fn eval_function_call(
         Some(f) => f,
         None => return Left("Function not found"),
     };
-    let mut return_value = 0.0;
     let func = function.clone();
-    let mut new_env = env;
 
-    for line in func.body {
-        let (value, temp_env) = match eval_expr(line, new_env) {
-            Either::Right(v) => v,
-            Either::Left(err) => return Left(err),
-        };
-        new_env = temp_env;
-        return_value = value;
-    }
-    Right((return_value, new_env))
+    eval_lines(func.body, env)
 }
 
 fn eval_variable_decl(
@@ -113,6 +121,25 @@ fn eval_ast_identifier(name: String, env: &mut Env) -> Either<&'static str, (f64
     }
 }
 
+fn eval_condition(cond: AstCondition, env: &mut Env) -> Either<&'static str, (f64, &mut Env)> {
+    let mut result = 0.0;
+    let (condition_result, env) = match eval_expr(*cond.condition, env) {
+        Either::Right(v) => v,
+        Either::Left(err) => return Either::Left(err),
+    };
+
+    if condition_result == 1.0 {
+        let (value, env) = match eval_lines(cond.body, env) {
+            Either::Right(v) => v,
+            Either::Left(err) => return Either::Left(err),
+        };
+
+        result = value;
+        return Either::Right((result, env));
+    }
+    Either::Right((result, env))
+}
+
 pub fn eval_expr(ast: AstNode, env: &mut Env) -> Either<&'static str, (f64, &mut Env)> {
     match ast {
         AstNode::Number(n) => Either::Right((n, env)),
@@ -121,5 +148,6 @@ pub fn eval_expr(ast: AstNode, env: &mut Env) -> Either<&'static str, (f64, &mut
         AstNode::FunctionDecl(decl) => eval_function_decl(decl, env),
         AstNode::FunctionCall(call) => eval_function_call(call, env),
         AstNode::VariableDecl(decl) => eval_variable_decl(decl, env),
+        AstNode::Condition(cond) => eval_condition(cond, env),
     }
 }

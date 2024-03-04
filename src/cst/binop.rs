@@ -4,7 +4,10 @@ use super::{
     char::{create_cst_add_atom, create_cst_div_atom, create_cst_mul_atom, create_cst_sub_atom},
     data::{CstAtom, CstBinop, CstNode},
     expr::create_cst_atom_value_expr,
-    keyword::{create_cst_equals_keyword, create_cst_ge_keyword, create_cst_gt_keyword, create_cst_le_keyword, create_cst_lt_keyword, create_cst_spaces},
+    keyword::{
+        create_cst_equals_keyword, create_cst_ge_keyword, create_cst_gt_keyword,
+        create_cst_le_keyword, create_cst_lt_keyword, create_cst_spaces,
+    },
     number::create_cst_number,
 };
 
@@ -131,7 +134,6 @@ pub fn create_cst_binop(expr: &str) -> Either<&str, (CstNode, &str)> {
         Right(r) => return Right(r),
         Left(_) => {}
     };
-    println!("No binop found. {:?}", expr);
     match create_cst_greater_than_keyword(expr) {
         Right(r) => return Right(r),
         Left(_) => {}

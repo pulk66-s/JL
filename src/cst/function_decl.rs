@@ -6,12 +6,11 @@ use crate::cst::char::{create_cst_closebrace_atom, create_cst_openbrace_atom};
 
 use super::{
     char::{
-        create_cst_closepar_atom, create_cst_comma_atom, create_cst_endexpr_atom,
+        create_cst_closepar_atom, create_cst_comma_atom,
         create_cst_openpar_atom,
     },
     data::{
-        CstAtom, CstFunctionChainArg, CstFunctionDecl, CstFunctionDeclArg, CstFunctionDeclArgs,
-        CstFunctionLine, CstNode,
+        CstAtom, CstFunctionChainArg, CstFunctionDecl, CstFunctionDeclArg, CstFunctionDeclArgs, CstFunctionLineExpr, CstNode
     },
     expr::create_cst_function_expr,
     keyword::{
@@ -107,11 +106,10 @@ fn create_cst_function_decl_args(expr: &str) -> Either<&str, (CstFunctionDeclArg
     ))
 }
 
-fn create_cst_function_decl_body(expr: &str) -> (Vec<CstFunctionLine>, &str) {
+pub fn create_cst_function_decl_body(expr: &str) -> (Vec<CstFunctionLineExpr>, &str) {
     let mut lines = vec![];
     let mut line;
     let mut new_expr = expr;
-    let mut endline;
 
     loop {
         (_, new_expr) = match create_cst_spaces(new_expr) {
@@ -120,22 +118,15 @@ fn create_cst_function_decl_body(expr: &str) -> (Vec<CstFunctionLine>, &str) {
         };
         (line, new_expr) = match create_cst_function_expr(new_expr) {
             Left(_) => break,
-            Right((node, rest)) => match node {
-                CstNode::FUNCTION_LINE_EXPR(expr) => (expr, rest),
-                _ => break,
-            },
+            Right(r) => r,
         };
         (_, new_expr) = match create_cst_spaces(new_expr) {
             Left(_) => break,
             Right(r) => r,
         };
-        (endline, new_expr) = match create_cst_endexpr_atom(new_expr) {
-            Left(_) => break,
-            Right(r) => r,
-        };
-        lines.push(CstFunctionLine {
-            expr: line,
-            endline: endline,
+        lines.push(match line {
+            CstNode::FUNCTION_LINE(line) => line,
+            _ => break
         });
     }
     (lines, new_expr)
