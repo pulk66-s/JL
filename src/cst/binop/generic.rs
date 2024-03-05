@@ -1,6 +1,11 @@
 use either::Either::{self, Left, Right};
 
-use crate::cst::{data::{CstAtom, CstBinop, CstNode}, expr::create_cst_atom_value_expr, keyword::create_cst_spaces, number::create_cst_number};
+use crate::cst::{
+    data::{CstAtom, CstBinop, CstNode},
+    expr::create_cst_atom_value_expr,
+    keyword::create_cst_spaces,
+    number::create_cst_number,
+};
 
 use super::chain::create_binop_chained;
 
@@ -40,4 +45,49 @@ pub fn create_binop(
         values: Box::new(datas),
     };
     Right((CstNode::BINOP(binop), new_expr))
+}
+
+#[cfg(test)]
+pub mod tests {
+    pub mod generic {
+        use either::Either::{self, Left, Right};
+
+        use crate::cst::{
+            binop::expr::tests::exprs::{atom_match_char, node_match_binop, node_match_float},
+            data::CstNode,
+        };
+
+        pub fn test_binop_abstract(
+            function: fn(&str) -> Either<&str, (CstNode, &str)>,
+            op: char,
+            from: &str,
+            nb_values: usize,
+            values: Vec<f64>,
+            expr: &str,
+        ) {
+            let (node, rest) = match function(expr) {
+                Left(err) => panic!("{}", err),
+                Right(r) => r,
+            };
+
+            assert_eq!(rest, "");
+
+            let binop = node_match_binop(&node, &format!("{}: Expected a binop node.", from));
+
+            atom_match_char(
+                &binop.op,
+                op,
+                &format!("{}: Expected a '{}' atom.", from, op),
+            );
+            assert_eq!(binop.values.len(), nb_values);
+
+            for (i, value) in values.iter().enumerate() {
+                node_match_float(
+                    &binop.values[i],
+                    *value,
+                    &format!("{}: Expected a float atom.", from),
+                );
+            }
+        }
+    }
 }
