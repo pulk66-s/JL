@@ -52,3 +52,15 @@ pub fn create_cst_closebrace_atom(expr: &str) -> Either<&str, (CstAtom, &str)> {
 pub fn create_cst_equal_atom(expr: &str) -> Either<&str, (CstAtom, &str)> {
     create_cst_char_atom(expr, '=')
 }
+
+#[cfg(test)]
+pub mod tests {
+    use crate::cst::data::CstAtom;
+
+    pub fn atom_match_char(atom: &CstAtom, c: char, err_message: &str) {
+        match atom {
+            CstAtom::CHAR(ch) => assert_eq!(*ch, c, "{}", err_message),
+            _ => panic!("atom_match_char: atom is not a char"),
+        }
+    }
+}

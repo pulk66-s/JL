@@ -75,19 +75,5 @@ pub mod tests {
                 _ => panic!("Err: {}", err_message),
             }
         }
-
-        pub fn atom_match_char(atom: &CstAtom, value: char, err_message: &str) {
-            match atom {
-                CstAtom::CHAR(c) => assert_eq!(*c, value),
-                _ => panic!("Expected a char atom. {}", err_message),
-            }
-        }
-
-        pub fn atom_match_keyword(atom: &CstAtom, value: &str, err_message: &str) {
-            match atom {
-                CstAtom::KEYWORD(k) => assert_eq!(*k, value),
-                _ => panic!("Expected a keyword atom. {}", err_message),
-            }
-        }
     }
 }

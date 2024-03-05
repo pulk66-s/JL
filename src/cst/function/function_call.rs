@@ -1,9 +1,7 @@
 use either::Either::{self, Left, Right};
 
-use crate::cst::char::create_cst_closepar_atom;
-
-use super::{
-    char::{create_cst_comma_atom, create_cst_openpar_atom},
+use crate::cst::{
+    char::{create_cst_closepar_atom, create_cst_comma_atom, create_cst_openpar_atom},
     data::{CstAtom, CstFunctionCall, CstFunctionCallArgChain, CstFunctionCallArgs, CstNode},
     expr::create_cst_value_expr,
     keyword::{create_cst_identifier, create_cst_spaces},

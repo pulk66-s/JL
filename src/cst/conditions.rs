@@ -3,11 +3,7 @@ use either::Either::{self, Left, Right};
 use crate::cst::char::create_cst_closebrace_atom;
 
 use super::{
-    char::{create_cst_closepar_atom, create_cst_openbrace_atom, create_cst_openpar_atom},
-    data::{CstCondition, CstNode},
-    expr::create_cst_value_expr,
-    function_decl::create_cst_function_decl_body,
-    keyword::{create_cst_if_keyword, create_cst_spaces},
+    char::{create_cst_closepar_atom, create_cst_openbrace_atom, create_cst_openpar_atom}, data::{CstCondition, CstNode}, expr::create_cst_value_expr, function::function_decl::body::create_cst_function_decl_body, keyword::{create_cst_if_keyword, create_cst_spaces}
 };
 
 pub fn create_cst_condition(expr: &str) -> Either<&str, (CstNode, &str)> {

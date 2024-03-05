@@ -50,7 +50,7 @@ pub fn create_cst_identifier(expr: &str) -> Either<&str, (CstAtom, &str)> {
 
 pub fn create_cst_function_return_arrow(expr: &str) -> Either<&str, (CstAtom, &str)> {
     match check_keyword(expr, "->") {
-        true => Right((CstAtom::CHAR('-'), &expr[2..])),
+        true => Right((CstAtom::KEYWORD("->".to_string()), &expr[2..])),
         false => Either::Left("Expected a function return arrow"),
     }
 }
@@ -122,5 +122,30 @@ pub fn create_cst_else_keyword(expr: &str) -> Either<&str, (CstAtom, &str)> {
     match check_keyword(expr, "else") {
         true => Right((CstAtom::KEYWORD("else".to_string()), &expr[4..])),
         false => Either::Left("Expected an else keyword"),
+    }
+}
+
+#[cfg(test)]
+pub mod tests {
+    pub mod keyword {
+        use crate::cst::data::CstAtom;
+
+        pub fn atom_match_keyword(atom: &CstAtom, value: &str, err_message: &str) {
+            match atom {
+                CstAtom::KEYWORD(k) => assert_eq!(*k, value),
+                _ => panic!("Expected a keyword atom. {}", err_message),
+            }
+        }
+    }
+
+    pub mod identifier {
+        use crate::cst::data::CstAtom;
+
+        pub fn atom_match_identifier(atom: &CstAtom, value: &str, err_message: &str) {
+            match atom {
+                CstAtom::IDENTIFIER(i) => assert_eq!(*i, value),
+                _ => panic!("Expected an identifier atom. {}", err_message),
+            }
+        }
     }
 }

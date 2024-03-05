@@ -53,10 +53,10 @@ pub mod tests {
         use either::Either::{self, Left, Right};
 
         use crate::cst::{
-            binop::expr::tests::exprs::{
-                atom_match_char, atom_match_keyword, node_match_binop, node_match_float,
-            },
+            binop::expr::tests::exprs::{node_match_binop, node_match_float},
+            char::tests::atom_match_char,
             data::CstNode,
+            keyword::tests::keyword::atom_match_keyword,
         };
 
         pub fn test_binop_abstract(

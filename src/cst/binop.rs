@@ -1,5 +1,3 @@
-use either::Either::{self, Left, Right};
-
 pub mod addition;
 pub mod expr;
 pub mod subtraction;
