@@ -104,11 +104,10 @@ fn create_ast_function_body(body: Vec<CstFunctionLineExpr>) -> Either<&'static s
                 Right(ast) => ast,
                 Left(err) => return Left(err),
             }),
-            CstFunctionLineExpr::CONDITION(cond) => {
-                let s = "Condition not implemented yet.";
-
-                return Left(s);
-            }
+            CstFunctionLineExpr::CONDITION(cond) => ast_body.push(match create_ast_condition(cond) {
+                Right(ast) => ast,
+                Left(err) => return Left(err),
+            }),
         }
     }
     Right(ast_body)
@@ -140,7 +139,7 @@ fn create_ast_function_line_expr(line: CstFunctionLineExpr) -> Either<&'static s
         CstFunctionLineExpr::LINE(line) => create_ast(*line.expr),
         CstFunctionLineExpr::RETURN(ret) => create_ast(*ret.value),
         CstFunctionLineExpr::CONDITION(cond) => {
-            let s = "Condition not implemented yet.";
+            let s = "Condition not implemented yet 2.";
 
             Left(s)
         }
@@ -212,7 +211,7 @@ fn create_ast_condition(cond: CstCondition) -> Either<&'static str, AstNode> {
                 Left(err) => return Left(err),
             },
             CstFunctionLineExpr::CONDITION(cond) => {
-                let s = "Condition not implemented yet.";
+                let s = "Condition not implemented yet 3.";
 
                 return Left(s);
             }
