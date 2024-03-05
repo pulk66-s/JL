@@ -10,7 +10,6 @@ pub fn create_cst_addition(expr: &str) -> Either<&str, (CstNode, &str)> {
 
 #[cfg(test)]
 mod tests {
-
     mod addition {
         use crate::cst::binop::{
             addition::create_cst_addition, generic::tests::generic::test_binop_abstract,

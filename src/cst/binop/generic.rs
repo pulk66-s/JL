@@ -53,7 +53,9 @@ pub mod tests {
         use either::Either::{self, Left, Right};
 
         use crate::cst::{
-            binop::expr::tests::exprs::{atom_match_char, node_match_binop, node_match_float},
+            binop::expr::tests::exprs::{
+                atom_match_char, atom_match_keyword, node_match_binop, node_match_float,
+            },
             data::CstNode,
         };
 
@@ -75,6 +77,39 @@ pub mod tests {
             let binop = node_match_binop(&node, &format!("{}: Expected a binop node.", from));
 
             atom_match_char(
+                &binop.op,
+                op,
+                &format!("{}: Expected a '{}' atom.", from, op),
+            );
+            assert_eq!(binop.values.len(), nb_values);
+
+            for (i, value) in values.iter().enumerate() {
+                node_match_float(
+                    &binop.values[i],
+                    *value,
+                    &format!("{}: Expected a float atom.", from),
+                );
+            }
+        }
+
+        pub fn test_binop_abstract_keyword(
+            function: fn(&str) -> Either<&str, (CstNode, &str)>,
+            op: &str,
+            from: &str,
+            nb_values: usize,
+            values: Vec<f64>,
+            expr: &str,
+        ) {
+            let (node, rest) = match function(expr) {
+                Left(err) => panic!("{}", err),
+                Right(r) => r,
+            };
+
+            assert_eq!(rest, "");
+
+            let binop = node_match_binop(&node, &format!("{}: Expected a binop node.", from));
+
+            atom_match_keyword(
                 &binop.op,
                 op,
                 &format!("{}: Expected a '{}' atom.", from, op),
