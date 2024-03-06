@@ -27,6 +27,7 @@ fn convert_op_sign(op: CstAtom) -> Option<Binop> {
             '-' => Some(Binop::Sub),
             '*' => Some(Binop::Mul),
             '/' => Some(Binop::Div),
+            '%' => Some(Binop::Mod),
             _ => None,
         },
         CstAtom::KEYWORD(op) => match op.as_str() {
@@ -138,7 +139,7 @@ fn create_ast_function_line_expr(line: CstFunctionLineExpr) -> Either<&'static s
     match line {
         CstFunctionLineExpr::LINE(line) => create_ast(*line.expr),
         CstFunctionLineExpr::RETURN(ret) => create_ast(*ret.value),
-        CstFunctionLineExpr::CONDITION(cond) => {
+        CstFunctionLineExpr::CONDITION(_) => {
             let s = "Condition not implemented yet 2.";
 
             Left(s)

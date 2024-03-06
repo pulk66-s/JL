@@ -18,6 +18,7 @@ pub fn eval_ast_binop(binop: AstBinop, env: &mut Env) -> Either<&'static str, (f
         Binop::Ge => |a, b| if a >= b { 1.0 } else { 0.0 },
         Binop::Lt => |a, b| if a < b { 1.0 } else { 0.0 },
         Binop::Le => |a, b| if a <= b { 1.0 } else { 0.0 },
+        Binop::Mod => |a, b| a % b,
     };
     let cloned_first_value = values[0].clone();
     let (mut result, mut env) = match eval_expr(cloned_first_value, env) {
@@ -50,16 +51,6 @@ fn eval_function_decl(
 
     env.functions.add_function(name, decl.body);
     Right((0.0, env))
-}
-
-fn eval_function_line(
-    line: AstFunctionLine,
-    env: &mut Env,
-) -> Either<&'static str, (f64, &mut Env)> {
-    match line {
-        AstFunctionLine::Line(expr) => eval_expr(*expr, env),
-        AstFunctionLine::Return(expr) => eval_expr(*expr, env),
-    }
 }
 
 fn eval_lines(

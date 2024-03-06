@@ -7,7 +7,8 @@ use super::{
     equality::create_cst_equality_keyword, greater::create_cst_greater_than_keyword,
     greater_or_equal::create_cst_greater_than_or_equals_keyword,
     less::create_cst_less_than_keyword, less_or_equal::create_cst_less_than_or_equals_keyword,
-    multiplication::create_cst_multiplication, subtraction::create_cst_subtraction,
+    modulo::create_cst_modulo, multiplication::create_cst_multiplication,
+    subtraction::create_cst_subtraction,
 };
 
 pub fn create_cst_binop(expr: &str) -> Either<&str, (CstNode, &str)> {
@@ -44,6 +45,10 @@ pub fn create_cst_binop(expr: &str) -> Either<&str, (CstNode, &str)> {
         Left(_) => {}
     };
     match create_cst_equality_keyword(expr) {
+        Right(r) => return Right(r),
+        Left(_) => {}
+    };
+    match create_cst_modulo(expr) {
         Right(r) => return Right(r),
         Left(_) => {}
     };

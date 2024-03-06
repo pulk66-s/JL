@@ -10,3 +10,4 @@ pub mod division;
 pub mod chain;
 pub mod generic;
 pub mod equality;
+pub mod modulo;

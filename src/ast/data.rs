@@ -4,6 +4,7 @@ pub enum Binop {
     Sub,
     Mul,
     Div,
+    Mod,
     Eq,
     Gt,
     Ge,

@@ -2,7 +2,7 @@ use either::Either::{self, Left, Right};
 
 use crate::cst::{
     data::{CstAtom, CstBinop, CstNode},
-    expr::create_cst_atom_value_expr,
+    expr::{create_cst_atom_value_expr, create_cst_value_expr},
     keyword::create_cst_spaces,
     number::create_cst_number,
 };
@@ -31,7 +31,7 @@ pub fn create_binop(
         Left(err) => return Left(err),
         Right(r) => r,
     };
-    let (right_number, new_expr) = match create_cst_atom_value_expr(new_expr) {
+    let (right_number, new_expr) = match create_cst_value_expr(new_expr) {
         Left(err) => return Left(err),
         Right(r) => r,
     };
