@@ -115,7 +115,7 @@ pub mod tests {
                 let (node, rest) = match create_cst_function_decl(
                     "fn test() -> number
 {
-    let a: number = 1;
+    let number a = 1;
     return a;
 }",
                 ) {

@@ -8,7 +8,7 @@ use super::{
     conditions::create_cst_condition,
     data::{CstFunctionLineExpr, CstLine, CstReturnExpr},
     function::{function_call::create_cst_function_call, function_decl::create_cst_function_decl},
-    keyword::{create_cst_identifier, create_cst_return_keyword, create_cst_spaces},
+    keyword::{create_cst_identifier, create_cst_return_keyword, create_cst_spaces}, variable_decl::create_cst_variable_decl,
 };
 
 pub fn create_cst_atom_value_expr(expr: &str) -> Either<&str, (CstNode, &str)> {
@@ -39,12 +39,20 @@ pub fn create_cst_value_expr(expr: &str) -> Either<&str, (CstNode, &str)> {
     Left("create_cst_value_expr: no match found.")
 }
 
-pub fn create_cst_decl_expr(expr: &str) -> Either<&str, (CstNode, &str)> {
-    create_cst_function_decl(expr)
+pub fn create_cst_value_line_expr_possibilities(expr: &str) -> Either<&str, (CstNode, &str)> {
+    match create_cst_variable_decl(expr) {
+        Left(_) => {}
+        Right(r) => return Right(r),
+    };
+    match create_cst_value_expr(expr) {
+        Left(_) => {}
+        Right(r) => return Right(r),
+    };
+    Left("create_cst_value_line_expr_possibilities: no match found.")
 }
 
 pub fn create_cst_value_line_expr(expr: &str) -> Either<&str, (CstNode, &str)> {
-    let (expr, new_expr) = match create_cst_value_expr(expr) {
+    let (expr, new_expr) = match create_cst_value_line_expr_possibilities(expr) {
         Left(err) => return Left(err),
         Right(r) => r,
     };
