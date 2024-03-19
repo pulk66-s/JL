@@ -1,4 +1,5 @@
 mod cst;
+mod tests;
 
 use std::env;
 

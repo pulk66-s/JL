@@ -1,6 +1,6 @@
 use self::env::Env;
 
-use super::{atom::num::NumAtom, node::Node};
+use super::{atom::{num::NumAtom, Atom}, node::Node};
 
 pub mod env;
 pub mod gen;
@@ -48,13 +48,16 @@ fn generate_parser_with_data(
     };
     let parser = match first_value.chars().next() {
         Some(c) if c.is_numeric() => match first_value.parse::<i64>() {
-            Ok(value) => NumAtom::new(vec![value]),
+            Ok(value) => Atom::Num(NumAtom::new(vec![value])),
             Err(_) => return Err("Not a number".to_string()),
         },
         _ => return Err("generate_parser_with_data not implemented".to_string()),
     };
 
-    env.add_definition(name, Box::new(parser.clone()));
+    env.add_definition(name, match parser.clone() {
+        Atom::Num(p) => Box::new(p),
+        _ => return Err("generate_parser_with_data not implemented".to_string()),
+    });
     Ok(Box::new(parser))
 }
 
