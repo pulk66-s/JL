@@ -28,6 +28,6 @@ impl Parser for Or {
     }
 
     fn to_string(&self) -> String {
-        format!("Or: {} | {}", self.left.to_string(), self.right.to_string())
+        format!("Or: {{{}, {}}}", self.left.to_string(), self.right.to_string())
     }
 }

@@ -25,4 +25,17 @@ pub mod tests_digit {
             (_, Err(e)) => panic!("Error: {}", e),
         }
     }
+
+    #[test]
+    fn test_digit() {
+        let (parser, env) = generate_parser("src/tests/grammar/number.grammar").unwrap();
+        let tests = vec!["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"];
+
+        for test in tests {
+            match parser.parse(&test.to_string(), &env) {
+                Ok(_) => {}
+                Err(e) => panic!("Error: {}", e),
+            }
+        }
+    }
 }

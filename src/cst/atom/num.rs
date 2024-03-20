@@ -23,10 +23,16 @@ impl Parser for NumAtom {
     }
 
     fn to_string(&self) -> String {
+        let mut fmt = "Num: {".to_string();
+
         match self.value {
-            Some(value) => value.to_string(),
-            None => "None".to_string(),
+            Some(value) => fmt.push_str(&value.to_string()),
+            None => fmt.push_str("None"),
         }
+        fmt.push_str(", ");
+        fmt.push_str(&self.possible_values.iter().map(|v| v.to_string()).collect::<Vec<String>>().join(", "));
+        fmt.push_str("}");
+        fmt
     }
 }
 
