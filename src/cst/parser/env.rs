@@ -1,7 +1,7 @@
-use super::Parser;
+use super::{Parser, ParserDataType};
 
 pub struct Env {
-    definitions: Vec<(String, Option<Box<dyn Parser>>)>,
+    definitions: Vec<(String, Option<ParserDataType>)>,
 }
 
 impl Env {
@@ -25,7 +25,7 @@ impl Env {
         }
     }
 
-    pub fn add_definition(&mut self, name: String, parser: Box<dyn Parser>) {
+    pub fn add_definition(&mut self, name: String, parser: ParserDataType) {
         match self.definitions.iter().position(|x| x.0 == name) {
             Some(pos) => self.definitions[pos].1 = Some(parser),
             None => self.definitions.push((name, Some(parser))),

@@ -1,7 +1,7 @@
-use super::parser::{env::Env, Parser};
+use super::parser::{env::Env, Parser, ParserDataType};
 
-pub mod num;
 pub mod char;
+pub mod num;
 pub mod string;
 
 #[derive(Clone)]
@@ -12,11 +12,19 @@ pub enum Atom {
 }
 
 impl Parser for Atom {
-    fn parse(&self, content: &String, env: &Env) -> Result<Box<dyn super::node::Node>, String> {
+    fn parse(&self, content: &String, env: &Env) -> Result<ParserDataType, String> {
         match self {
             Atom::Num(parser) => parser.parse(content, env),
             Atom::Char(parser) => parser.parse(content, env),
             Atom::String(parser) => parser.parse(content, env),
+        }
+    }
+
+    fn to_string(&self) -> String {
+        match self {
+            Atom::Num(parser) => parser.to_string(),
+            Atom::Char(parser) => parser.to_string(),
+            Atom::String(parser) => parser.to_string(),
         }
     }
 }

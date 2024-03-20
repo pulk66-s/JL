@@ -23,7 +23,7 @@ fn main() {
             return
         }
     };
-    let test_string = "0".to_string();
+    let test_string = "1".to_string();
 
     match parser.parse(&test_string, &env) {
         Ok(node) => println!("Parsed: {}", node.to_string()),

@@ -1,7 +1,5 @@
-use crate::cst::atom::Atom;
-
 use super::env::Env;
-use super::{generate_parser_with_env, Parser};
+use super::{generate_parser_with_env, ParserDataType};
 use std::fs::File;
 use std::io::Read;
 
@@ -25,7 +23,7 @@ fn split_content(content: &String) -> Vec<String> {
         .collect()
 }
 
-pub fn generate_parser(file: &str) -> Result<(Box<dyn Parser>, Env), String> {
+pub fn generate_parser(file: &str) -> Result<(ParserDataType, Env), String> {
     let file_content = match read_file(file) {
         Ok(content) => content,
         Err(err) => return Err(err),

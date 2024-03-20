@@ -1,4 +1,6 @@
-use crate::cst::{node::Node, parser::{env::Env, Parser}};
+use crate::cst::parser::{env::Env, Parser, ParserDataType};
+
+use super::Atom;
 
 #[derive(Clone)]
 pub struct NumAtom {
@@ -6,26 +8,24 @@ pub struct NumAtom {
     pub possible_values: Vec<i64>,
 }
 
-impl Node for NumAtom {
+impl Parser for NumAtom {
+    fn parse(&self, content: &String, _env: &Env) -> Result<ParserDataType, String> {
+        match content.parse::<i64>() {
+            Ok(value) if self.possible_values.contains(&value) => {
+                Ok(ParserDataType::Atom(Atom::Num(NumAtom {
+                    value: Some(value),
+                    possible_values: self.possible_values.clone(),
+                })))
+            }
+            Ok(_) => Err("Value not in possible values".to_string()),
+            Err(_) => Err("Not a number".to_string()),
+        }
+    }
+
     fn to_string(&self) -> String {
         match self.value {
             Some(value) => value.to_string(),
             None => "None".to_string(),
-        }
-    }
-}
-
-impl Parser for NumAtom {
-    fn parse(&self, content: &String, _env: &Env) -> Result<Box<dyn Node>, String> {
-        match content.parse::<i64>() {
-            Ok(value) if self.possible_values.contains(&value) => {
-                Ok(Box::new(NumAtom {
-                    value: Some(value),
-                    possible_values: self.possible_values.clone(),
-                }))
-            },
-            Ok(_) => Err("Value not in possible values".to_string()),
-            Err(_) => Err("Not a number".to_string()),
         }
     }
 }
