@@ -26,3 +26,9 @@ impl Parser for StringAtom {
         self.value.clone()
     }
 }
+
+impl StringAtom {
+    pub fn new(value: String) -> StringAtom {
+        StringAtom { value }
+    }
+}

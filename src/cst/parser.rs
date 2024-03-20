@@ -1,7 +1,7 @@
 use self::env::Env;
 
 use super::{
-    atom::{num::NumAtom, Atom},
+    atom::{num::NumAtom, string::StringAtom, Atom},
     logic::or::Or,
 };
 
@@ -91,9 +91,31 @@ fn generate_parser_numeric(value: &String) -> Result<ParserDataType, String> {
     Ok(ParserDataType::Atom(parser))
 }
 
+fn generate_parser_string(value: &String) -> Result<ParserDataType, String> {
+    let value_without_quotes = value.trim_matches('\"');
+    let parser = Atom::String(StringAtom::new(value_without_quotes.to_string()));
+
+    Ok(ParserDataType::Atom(parser))
+}
+
+fn generate_parser_char(value: &String) -> Result<ParserDataType, String> {
+    let value_without_quotes = value.trim_matches('\'');
+    let parser = Atom::String(StringAtom::new(value_without_quotes.to_string()));
+
+    Ok(ParserDataType::Atom(parser))
+}
+
 fn generate_parser_body(values: Vec<String>, env: &mut Env) -> Result<ParserDataType, String> {
     if values.len() == 1 {
-        return generate_parser_numeric(&values[0]);
+        if values[0].chars().next() == Some('\"') {
+            return generate_parser_string(&values[0]);
+        }
+        match values[0].chars().next() {
+            Some('0'..='9') => return generate_parser_numeric(&values[0]),
+            Some('\"') => return generate_parser_string(&values[0]),
+            Some('\'') => return generate_parser_char(&values[0]),
+            _ => return Err("generate_parser_body, Syntax error".to_string()),
+        }
     }
     for (i, value) in values.iter().enumerate() {
         if value == "|" {
@@ -107,26 +129,6 @@ fn save_parser_in_env(name: String, parser: ParserDataType, env: &mut Env) {
     env.add_definition(name, parser);
 }
 
-fn generate_parser_with_data(
-    name: String,
-    values: Vec<String>,
-    env: &mut Env,
-) -> Result<ParserDataType, String> {
-    if values.len() == 1 {
-        let parser = match generate_parser_numeric(&values[0]) {
-            Ok(p) => p,
-            Err(err) => return Err(err),
-        };
-        return Ok(parser);
-    }
-    for (i, value) in values.iter().enumerate() {
-        if value == "|" {
-            return generate_or_parser(values.clone(), i, env);
-        }
-    }
-    Err("generate_parser_with_data, Syntax error".to_string())
-}
-
 // return Some(String) when error
 pub fn generate_parser_with_env(
     env: &mut Env,
@@ -136,7 +138,7 @@ pub fn generate_parser_with_env(
         Ok((name, value)) => (name, value),
         Err(err) => return Err(err),
     };
-    let parser = match generate_parser_with_data(first_name.clone(), first_value, env) {
+    let parser = match generate_parser_body(first_value, env) {
         Ok(parser) => parser,
         Err(err) => return Err(err),
     };
