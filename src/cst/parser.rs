@@ -2,7 +2,7 @@ use self::env::Env;
 
 use super::{
     atom::{char::CharAtom, num::NumAtom, string::StringAtom, Atom},
-    logic::{and::And, maybe::Maybe, or::Or, repeat::Repeat},
+    logic::{and::And, array::Array, maybe::Maybe, or::Or, repeat::Repeat},
 };
 
 pub mod env;
@@ -16,6 +16,7 @@ pub enum ParserDataType {
     Parser(String),
     Repeat(Repeat),
     Maybe(Maybe),
+    Array(Array),
 }
 
 impl ParserDataType {
@@ -27,6 +28,7 @@ impl ParserDataType {
             ParserDataType::Parser(value) => value.to_string(),
             ParserDataType::Repeat(value) => value.to_string(),
             ParserDataType::Maybe(value) => value.to_string(),
+            ParserDataType::Array(value) => value.to_string(),
         }
     }
 
@@ -54,9 +56,10 @@ impl ParserDataType {
             ParserDataType::Parser(parser) => {
                 let parser_name = parser.to_string();
                 self.parse_subparser(parser_name, content, env)
-            },
+            }
             ParserDataType::Repeat(value) => value.parse(content, env),
             ParserDataType::Maybe(value) => value.parse(content, env),
+            ParserDataType::Array(value) => value.parse(content, env),
         }
     }
 }
@@ -134,7 +137,7 @@ fn generate_and_parser(
 
 fn generate_parser_numeric(value: &String) -> Result<ParserDataType, String> {
     let parser = match value.parse::<i64>() {
-        Ok(value) => Atom::Num(NumAtom::new(vec![value])),
+        Ok(value) => Atom::Num(NumAtom::new(vec![value], None)),
         Err(_) => return Err("Not a number".to_string()),
     };
     Ok(ParserDataType::Atom(parser))
@@ -179,6 +182,20 @@ fn generate_parser_maybe(value: String, env: &mut Env) -> Result<ParserDataType,
     Ok(ParserDataType::Maybe(Maybe::new(parser)))
 }
 
+fn generate_parser_array(value: &String, env: &mut Env) -> Result<ParserDataType, String> {
+    let values = value.trim_matches(['[', ']']).split("..").collect::<Vec<&str>>();
+    let start = match generate_parser_body(vec![values[0].to_string()], env) {
+        Ok(r) => r,
+        Err(err) => return Err(err),
+    };
+    let end = match generate_parser_body(vec![values[1].to_string()], env) {
+        Ok(r) => r,
+        Err(err) => return Err(err),
+    };
+
+    Ok(ParserDataType::Array(Array::new(start, end)))
+}
+
 fn generate_parser_body(values: Vec<String>, env: &mut Env) -> Result<ParserDataType, String> {
     if values.len() == 1 {
         match values[0].chars().last() {
@@ -192,11 +209,11 @@ fn generate_parser_body(values: Vec<String>, env: &mut Env) -> Result<ParserData
         if env.get_definition(values[0].to_string()).is_ok() {
             return Ok(ParserDataType::Parser(values[0].to_string()));
         }
-        println!("values[0] {}", values[0]);
         match values[0].chars().next() {
             Some('0'..='9') => return generate_parser_numeric(&values[0]),
             Some('\"') => return generate_parser_string(&values[0]),
             Some('\'') => return generate_parser_char(&values[0]),
+            Some('[') => return generate_parser_array(&values[0], env),
             _ => return Err("generate_parser_body, Syntax error".to_string()),
         }
     }

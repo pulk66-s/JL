@@ -19,10 +19,7 @@ impl Parser for NumAtom {
             Ok(value) if self.possible_values.contains(&value) => {
                 let rest = content.chars().skip(1).collect::<String>();
 
-                return Ok((
-                    ParserDataType::Atom(Atom::Num(self.clone())),
-                    rest,
-                ));
+                return Ok((ParserDataType::Atom(Atom::Num(self.clone())), rest));
             }
             Ok(_) => Err("Value not in possible values".to_string()),
             Err(_) => Err("Not a number".to_string()),
@@ -51,9 +48,9 @@ impl Parser for NumAtom {
 }
 
 impl NumAtom {
-    pub fn new(values: Vec<i64>) -> NumAtom {
+    pub fn new(values: Vec<i64>, value: Option<i64>) -> NumAtom {
         NumAtom {
-            value: None,
+            value: value,
             possible_values: values,
         }
     }

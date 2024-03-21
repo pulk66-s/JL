@@ -23,8 +23,9 @@ fn main() {
             return;
         }
     };
-    let test_string = "1".to_string();
+    let test_string = "100".to_string();
 
+    println!("parser {}", parser.to_string());
     println!("env {}", env.to_string());
     match parser.parse(&test_string, &env) {
         Ok((node, rest)) => println!("Parsed: {} rest {}", node.to_string(), rest),
