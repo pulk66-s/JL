@@ -15,7 +15,7 @@ impl CharAtom {
 
 impl Parser for CharAtom {
     fn parse(
-        &self,
+        &mut self,
         content: &String,
         _env: &crate::cst::parser::env::Env,
     ) -> Result<(ParserDataType, String), String> {

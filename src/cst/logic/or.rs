@@ -16,7 +16,7 @@ impl Or {
 }
 
 impl Parser for Or {
-    fn parse(&self, input: &String, env: &Env) -> Result<(ParserDataType, String), String> {
+    fn parse(&mut self, input: &String, env: &Env) -> Result<(ParserDataType, String), String> {
         let left = self.left.parse(input, env);
         let right = self.right.parse(input, env);
 

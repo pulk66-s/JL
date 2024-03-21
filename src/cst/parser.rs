@@ -2,7 +2,7 @@ use self::env::Env;
 
 use super::{
     atom::{char::CharAtom, num::NumAtom, string::StringAtom, Atom},
-    logic::{and::And, or::Or},
+    logic::{and::And, or::Or, repeat::Repeat},
 };
 
 pub mod env;
@@ -14,6 +14,7 @@ pub enum ParserDataType {
     Or(Or),
     And(And),
     Parser(String),
+    Repeat(Repeat),
 }
 
 impl ParserDataType {
@@ -23,28 +24,42 @@ impl ParserDataType {
             ParserDataType::Or(value) => value.to_string(),
             ParserDataType::And(value) => value.to_string(),
             ParserDataType::Parser(value) => value.to_string(),
+            ParserDataType::Repeat(value) => value.to_string(),
         }
     }
 
-    fn parse_subparser(&self, name: String, content: &String, env: &Env) -> Result<(ParserDataType, String), String> {
+    fn parse_subparser(
+        &mut self,
+        name: String,
+        content: &String,
+        env: &Env,
+    ) -> Result<(ParserDataType, String), String> {
         match env.get_definition(name) {
-            Ok(Some(parser)) => parser.parse(content, env),
-            _ => Err("No definition provided".to_string())
+            Ok(Some(mut parser)) => parser.parse(content, env),
+            _ => Err("No definition provided".to_string()),
         }
     }
 
-    pub fn parse(&self, content: &String, env: &Env) -> Result<(ParserDataType, String), String> {
+    pub fn parse(
+        &mut self,
+        content: &String,
+        env: &Env,
+    ) -> Result<(ParserDataType, String), String> {
         match self {
             ParserDataType::Atom(atom) => atom.parse(content, env),
             ParserDataType::Or(value) => value.parse(content, env),
             ParserDataType::And(value) => value.parse(content, env),
-            ParserDataType::Parser(parser) => self.parse_subparser(parser.to_string(), content, env),
+            ParserDataType::Parser(parser) => {
+                let parser_name = parser.to_string();
+                self.parse_subparser(parser_name, content, env)
+            },
+            ParserDataType::Repeat(value) => value.parse(content, env),
         }
     }
 }
 
 pub trait Parser: Clone {
-    fn parse(&self, content: &String, env: &Env) -> Result<(ParserDataType, String), String>;
+    fn parse(&mut self, content: &String, env: &Env) -> Result<(ParserDataType, String), String>;
     fn to_string(&self) -> String;
 }
 
@@ -61,11 +76,12 @@ fn get_definition_value(env: &Env, content: &Vec<String>, i: usize) -> Vec<Strin
     values
 }
 
-fn get_definition(i: usize, env: &Env, content: &Vec<String>) -> Result<(String, Vec<String>), String> {
-    match (
-        content.get(i - 1),
-        get_definition_value(env, content, i),
-    ) {
+fn get_definition(
+    i: usize,
+    env: &Env,
+    content: &Vec<String>,
+) -> Result<(String, Vec<String>), String> {
+    match (content.get(i - 1), get_definition_value(env, content, i)) {
         (_, vec) if vec.len() == 0 => return Err("No value found".to_string()),
         (Some(declaration), values) => return Ok((declaration.to_string(), values)),
         (None, _) => return Err("No declaration found".to_string()),
@@ -140,8 +156,21 @@ fn generate_parser_char(value: &String) -> Result<ParserDataType, String> {
     Ok(ParserDataType::Atom(parser))
 }
 
+fn generate_parser_repeat(value: String, env: &mut Env) -> Result<ParserDataType, String> {
+    let delete_last = value[..(value.len() - 1)].to_string();
+    let parser = match generate_parser_body(vec![delete_last], env) {
+        Ok(r) => r,
+        Err(err) => return Err(err),
+    };
+
+    Ok(ParserDataType::Repeat(Repeat::new(parser)))
+}
+
 fn generate_parser_body(values: Vec<String>, env: &mut Env) -> Result<ParserDataType, String> {
     if values.len() == 1 {
+        if values[0].chars().last() == Some('*') {
+            return generate_parser_repeat(values[0].clone(), env);
+        }
         if values[0].chars().next() == Some('\"') {
             return generate_parser_string(&values[0]);
         }

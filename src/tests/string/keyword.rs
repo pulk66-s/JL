@@ -4,7 +4,7 @@ pub mod tests_keyword {
 
     #[test]
     fn test_keyword() {
-        let (parser, env) = generate_parser("src/tests/grammar/string.grammar").unwrap();
+        let (mut parser, env) = generate_parser("src/tests/grammar/string.grammar").unwrap();
         let test = "if".to_string();
 
         match parser.parse(&test, &env) {
@@ -15,7 +15,7 @@ pub mod tests_keyword {
 
     #[test]
     fn test_char() {
-        let (parser, env) = generate_parser("src/tests/grammar/char.grammar").unwrap();
+        let (mut parser, env) = generate_parser("src/tests/grammar/char.grammar").unwrap();
         let test = "a".to_string();
 
         match parser.parse(&test, &env) {
@@ -26,7 +26,7 @@ pub mod tests_keyword {
 
     #[test]
     fn test_elseif() {
-        let (parser, env) = generate_parser("src/tests/grammar/and.grammar").unwrap();
+        let (mut parser, env) = generate_parser("src/tests/grammar/and.grammar").unwrap();
         let test = "else if".to_string();
 
         println!("{:?}", parser.to_string());

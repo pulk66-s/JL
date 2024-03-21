@@ -16,14 +16,14 @@ fn main() {
 
     println!("Generating parser from file: {}", first_arg);
 
-    let (parser, env) = match generate_parser(&first_arg) {
+    let (mut parser, env) = match generate_parser(&first_arg) {
         Ok(parser) => parser,
         Err(err) => {
             println!("{}", err);
             return;
         }
     };
-    let test_string = "1 OK".to_string();
+    let test_string = "100".to_string();
 
     println!("env {}", env.to_string());
     match parser.parse(&test_string, &env) {

@@ -16,7 +16,7 @@ impl And {
 }
 
 impl Parser for And {
-    fn parse(&self, input: &String, env: &Env) -> Result<(ParserDataType, String), String> {
+    fn parse(&mut self, input: &String, env: &Env) -> Result<(ParserDataType, String), String> {
         match self.left.parse(input, env) {
             Ok((_, new_input)) => match self.right.parse(&new_input, env) {
                 Ok((_, new_input)) => Ok((ParserDataType::And(self.clone()), new_input)),

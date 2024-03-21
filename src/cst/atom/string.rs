@@ -9,7 +9,7 @@ pub struct StringAtom {
 
 impl Parser for StringAtom {
     fn parse(
-        &self,
+        &mut self,
         content: &String,
         _env: &crate::cst::parser::env::Env,
     ) -> Result<(ParserDataType, String), String> {
