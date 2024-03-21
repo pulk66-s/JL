@@ -1,5 +1,11 @@
-word = number;
+main = function;
 
-number = [0..9]*;
+function = type
+    & spaces
+    & word;
 
-letter = ['a'..'z'];
+type = word;
+
+word = ['a'..'z']*;
+
+spaces = ' '*?;

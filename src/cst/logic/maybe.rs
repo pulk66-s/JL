@@ -8,25 +8,26 @@ pub struct Maybe {
 
 impl Parser for Maybe {
     fn to_string(&self) -> String {
-        let mut res = "".to_string();
+        let mut res = "{\"Maybe\": {\"expr\":".to_string();
 
         res += &self.expr.to_string();
-        res += "?";
+        res += ", \"value\": ";
         match &self.value {
             Some(value) => res += &value.to_string(),
-            None => res += "None",
+            None => res += "\"None\"",
         }
+        res += "}";
         return res;
     }
 
     fn parse(&mut self, content: &String, env: &Env) -> Result<(ParserDataType, String), String> {
         let (expr, rest) = match self.expr.parse(content, env) {
             Ok((expr, rest)) => (expr, rest),
-            Err(_) => return Ok((ParserDataType::Maybe(self.clone()), content.clone())),
+            Err(_) => return Ok((ParserDataType::None, content.clone())),
         };
 
-        self.value = Some(Box::new(expr));
-        Ok((ParserDataType::Maybe(self.clone()), rest))
+        self.value = Some(Box::new(expr.clone()));
+        Ok((expr, rest))
     }
 }
 

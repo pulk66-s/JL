@@ -31,13 +31,9 @@ impl Array {
         };
 
         if first_char >= s && first_char <= l {
-            self.value = Some(Box::new(ParserDataType::Atom(Atom::Char(CharAtom::new(
-                first_char,
-            )))));
-            return Ok((
-                ParserDataType::Array(self.clone()),
-                content[1..].to_string(),
-            ));
+            let value = Box::new(ParserDataType::Atom(Atom::Char(CharAtom::new(first_char))));
+            self.value = Some(value.clone());
+            return Ok((*value, content[1..].to_string()));
         }
         return Err("char doesn't match".to_string());
     }
@@ -58,14 +54,13 @@ impl Array {
         };
 
         if first_num >= s && first_num <= l {
-            self.value = Some(Box::new(ParserDataType::Atom(Atom::Num(NumAtom::new(
+            let value = Box::new(ParserDataType::Atom(Atom::Num(NumAtom::new(
                 vec![],
                 Some(first_num),
-            )))));
-            return Ok((
-                ParserDataType::Array(self.clone()),
-                content[1..].to_string(),
-            ));
+            ))));
+
+            self.value = Some(value.clone());
+            return Ok((*value, content[1..].to_string()));
         }
         return Err("char doesn't match".to_string());
     }
@@ -95,7 +90,7 @@ impl Parser for Array {
 
     fn to_string(&self) -> String {
         format!(
-            "start: {}, last {}, value {}",
+            "{{\"Array\": {{\"start\": {}, \"last\": {}, \"value\": {}}}}}",
             self.start_expr.to_string(),
             self.last_expr.to_string(),
             match &self.value {

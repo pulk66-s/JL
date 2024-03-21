@@ -23,7 +23,7 @@ fn main() {
             return;
         }
     };
-    let test_string = "100".to_string();
+    let test_string = "int main".to_string();
 
     println!("parser {}", parser.to_string());
     println!("env {}", env.to_string());

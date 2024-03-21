@@ -24,7 +24,7 @@ impl Parser for StringAtom {
     }
 
     fn to_string(&self) -> String {
-        format!("StringAtom: '{}'", self.value)
+        format!("{{\"StringAtom\": \"{}\"}}", self.value)
     }
 }
 

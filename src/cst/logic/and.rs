@@ -18,8 +18,8 @@ impl And {
 impl Parser for And {
     fn parse(&mut self, input: &String, env: &Env) -> Result<(ParserDataType, String), String> {
         match self.left.parse(input, env) {
-            Ok((_, new_input)) => match self.right.parse(&new_input, env) {
-                Ok((_, new_input)) => Ok((ParserDataType::And(self.clone()), new_input)),
+            Ok((l, new_input)) => match self.right.parse(&new_input, env) {
+                Ok((r, new_input)) => Ok((ParserDataType::And(And::new(l, r)), new_input)),
                 Err(e) => Err(e),
             },
             Err(e) => Err(e),
@@ -28,7 +28,7 @@ impl Parser for And {
 
     fn to_string(&self) -> String {
         format!(
-            "And: {{{}, {}}}",
+            "{{\"And\": {{\"left\": {}, \"right\": {}}}}}",
             self.left.to_string(),
             self.right.to_string()
         )

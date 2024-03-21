@@ -38,7 +38,6 @@ impl Repeat {
     }
 
     fn combine_char(&self, values: Vec<ParserDataType>) -> ParserDataType {
-        println!("cobmine char");
         ParserDataType::Atom(Atom::String(StringAtom::new(
             values
                 .iter()
@@ -51,7 +50,6 @@ impl Repeat {
     }
 
     fn combine_arr(&self, values: Vec<ParserDataType>) -> ParserDataType {
-        println!("Combine arr");
         let array = values
             .iter()
             .map(|x| match x {
@@ -84,14 +82,14 @@ impl Repeat {
 
 impl Parser for Repeat {
     fn to_string(&self) -> String {
-        let mut res = "".to_string();
+        let mut res = "{\"Repeat\": {\"expr\": ".to_string();
 
         res += &self.expr.to_string();
-        res += "[";
+        res += "}, \"values\": [";
         for value in self.values.iter() {
             res += &value.to_string();
         }
-        res += "]";
+        res += "]}";
         return res;
     }
 
@@ -101,7 +99,7 @@ impl Parser for Repeat {
         loop {
             let (expr, rest) = match self.expr.parse(&res, env) {
                 Ok((expr, rest)) => (expr, rest),
-                Err(_) => break,
+                Err(e) => break,
             };
 
             res = rest;
