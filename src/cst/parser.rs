@@ -2,7 +2,7 @@ use self::env::Env;
 
 use super::{
     atom::{char::CharAtom, num::NumAtom, string::StringAtom, Atom},
-    logic::{and::And, or::Or, repeat::Repeat},
+    logic::{and::And, maybe::Maybe, or::Or, repeat::Repeat},
 };
 
 pub mod env;
@@ -15,6 +15,7 @@ pub enum ParserDataType {
     And(And),
     Parser(String),
     Repeat(Repeat),
+    Maybe(Maybe),
 }
 
 impl ParserDataType {
@@ -25,6 +26,7 @@ impl ParserDataType {
             ParserDataType::And(value) => value.to_string(),
             ParserDataType::Parser(value) => value.to_string(),
             ParserDataType::Repeat(value) => value.to_string(),
+            ParserDataType::Maybe(value) => value.to_string(),
         }
     }
 
@@ -54,6 +56,7 @@ impl ParserDataType {
                 self.parse_subparser(parser_name, content, env)
             },
             ParserDataType::Repeat(value) => value.parse(content, env),
+            ParserDataType::Maybe(value) => value.parse(content, env),
         }
     }
 }
@@ -166,10 +169,22 @@ fn generate_parser_repeat(value: String, env: &mut Env) -> Result<ParserDataType
     Ok(ParserDataType::Repeat(Repeat::new(parser)))
 }
 
+fn generate_parser_maybe(value: String, env: &mut Env) -> Result<ParserDataType, String> {
+    let delete_last = value[..(value.len() - 1)].to_string();
+    let parser = match generate_parser_body(vec![delete_last], env) {
+        Ok(r) => r,
+        Err(err) => return Err(err),
+    };
+
+    Ok(ParserDataType::Maybe(Maybe::new(parser)))
+}
+
 fn generate_parser_body(values: Vec<String>, env: &mut Env) -> Result<ParserDataType, String> {
     if values.len() == 1 {
-        if values[0].chars().last() == Some('*') {
-            return generate_parser_repeat(values[0].clone(), env);
+        match values[0].chars().last() {
+            Some('*') => return generate_parser_repeat(values[0].clone(), env),
+            Some('?') => return generate_parser_maybe(values[0].clone(), env),
+            _ => (),
         }
         if values[0].chars().next() == Some('\"') {
             return generate_parser_string(&values[0]);
