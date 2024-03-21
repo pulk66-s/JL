@@ -1,7 +1,7 @@
 use self::env::Env;
 
 use super::{
-    atom::{num::NumAtom, string::StringAtom, Atom},
+    atom::{char::CharAtom, num::NumAtom, string::StringAtom, Atom},
     logic::{and::And, or::Or},
 };
 
@@ -13,6 +13,7 @@ pub enum ParserDataType {
     Atom(Atom),
     Or(Or),
     And(And),
+    Parser(String),
 }
 
 impl ParserDataType {
@@ -21,6 +22,14 @@ impl ParserDataType {
             ParserDataType::Atom(atom) => atom.to_string(),
             ParserDataType::Or(value) => value.to_string(),
             ParserDataType::And(value) => value.to_string(),
+            ParserDataType::Parser(value) => value.to_string(),
+        }
+    }
+
+    fn parse_subparser(&self, name: String, content: &String, env: &Env) -> Result<(ParserDataType, String), String> {
+        match env.get_definition(name) {
+            Ok(Some(parser)) => parser.parse(content, env),
+            _ => Err("No definition provided".to_string())
         }
     }
 
@@ -29,6 +38,7 @@ impl ParserDataType {
             ParserDataType::Atom(atom) => atom.parse(content, env),
             ParserDataType::Or(value) => value.parse(content, env),
             ParserDataType::And(value) => value.parse(content, env),
+            ParserDataType::Parser(parser) => self.parse_subparser(parser.to_string(), content, env),
         }
     }
 }
@@ -51,14 +61,10 @@ fn get_definition_value(env: &Env, content: &Vec<String>, i: usize) -> Vec<Strin
     values
 }
 
-fn get_first_definition(env: &Env, content: &Vec<String>) -> Result<(String, Vec<String>), String> {
-    let first_equal = match content.iter().position(|x| x.chars().next() == Some('=')) {
-        Some(pos) => pos,
-        None => return Err("No definition found".to_string()),
-    };
+fn get_definition(i: usize, env: &Env, content: &Vec<String>) -> Result<(String, Vec<String>), String> {
     match (
-        content.get(first_equal - 1),
-        get_definition_value(env, content, first_equal),
+        content.get(i - 1),
+        get_definition_value(env, content, i),
     ) {
         (_, vec) if vec.len() == 0 => return Err("No value found".to_string()),
         (Some(declaration), values) => return Ok((declaration.to_string(), values)),
@@ -126,7 +132,10 @@ fn generate_parser_string(value: &String) -> Result<ParserDataType, String> {
 
 fn generate_parser_char(value: &String) -> Result<ParserDataType, String> {
     let value_without_quotes = value.trim_matches('\'');
-    let parser = Atom::String(StringAtom::new(value_without_quotes.to_string()));
+    let parser = Atom::Char(CharAtom::new(match value_without_quotes.chars().next() {
+        Some(value) => value,
+        None => return Err("generate_parser_char, Syntax error".to_string()),
+    }));
 
     Ok(ParserDataType::Atom(parser))
 }
@@ -135,6 +144,9 @@ fn generate_parser_body(values: Vec<String>, env: &mut Env) -> Result<ParserData
     if values.len() == 1 {
         if values[0].chars().next() == Some('\"') {
             return generate_parser_string(&values[0]);
+        }
+        if env.get_definition(values[0].to_string()).is_ok() {
+            return Ok(ParserDataType::Parser(values[0].to_string()));
         }
         println!("values[0] {}", values[0]);
         match values[0].chars().next() {
@@ -164,15 +176,27 @@ pub fn generate_parser_with_env(
     env: &mut Env,
     content: Vec<String>,
 ) -> Result<ParserDataType, String> {
-    let (first_name, first_value) = match get_first_definition(&env, &content) {
-        Ok((name, value)) => (name, value),
-        Err(err) => return Err(err),
-    };
-    let parser = match generate_parser_body(first_value, env) {
-        Ok(parser) => parser,
-        Err(err) => return Err(err),
-    };
+    let mut first_parser = None;
+    for (i, word) in content.iter().enumerate() {
+        if word == "=" {
+            let (name, values) = match get_definition(i, env, &content) {
+                Ok(r) => r,
+                Err(err) => return Err(err),
+            };
 
-    save_parser_in_env(first_name, parser.clone(), env);
-    Ok(parser)
+            let parser = match generate_parser_body(values, env) {
+                Ok(parser) => parser,
+                Err(err) => return Err(err),
+            };
+            save_parser_in_env(name, parser.clone(), env);
+            match first_parser {
+                Some(_) => (),
+                None => first_parser = Some(parser),
+            }
+        }
+    }
+    match first_parser {
+        Some(parser) => Ok(parser),
+        None => Err("No parser found".to_string()),
+    }
 }

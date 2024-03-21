@@ -7,6 +7,12 @@ pub struct CharAtom {
     pub value: char,
 }
 
+impl CharAtom {
+    pub fn new(value: char) -> CharAtom {
+        CharAtom { value }
+    }
+}
+
 impl Parser for CharAtom {
     fn parse(
         &self,
