@@ -2,7 +2,7 @@ use self::env::Env;
 
 use super::{
     atom::{num::NumAtom, string::StringAtom, Atom},
-    logic::or::Or,
+    logic::{and::And, or::Or},
 };
 
 pub mod env;
@@ -12,6 +12,7 @@ pub mod gen;
 pub enum ParserDataType {
     Atom(Atom),
     Or(Or),
+    And(And),
 }
 
 impl ParserDataType {
@@ -19,19 +20,21 @@ impl ParserDataType {
         match self {
             ParserDataType::Atom(atom) => atom.to_string(),
             ParserDataType::Or(value) => value.to_string(),
+            ParserDataType::And(value) => value.to_string(),
         }
     }
 
-    pub fn parse(&self, content: &String, env: &Env) -> Result<ParserDataType, String> {
+    pub fn parse(&self, content: &String, env: &Env) -> Result<(ParserDataType, String), String> {
         match self {
             ParserDataType::Atom(atom) => atom.parse(content, env),
             ParserDataType::Or(value) => value.parse(content, env),
+            ParserDataType::And(value) => value.parse(content, env),
         }
     }
 }
 
 pub trait Parser: Clone {
-    fn parse(&self, content: &String, env: &Env) -> Result<ParserDataType, String>;
+    fn parse(&self, content: &String, env: &Env) -> Result<(ParserDataType, String), String>;
     fn to_string(&self) -> String;
 }
 
@@ -83,6 +86,27 @@ fn generate_or_parser(
     Ok(ParserDataType::Or(Or::new(left, right)))
 }
 
+fn generate_and_parser(
+    values: Vec<String>,
+    i: usize,
+    env: &mut Env,
+) -> Result<ParserDataType, String> {
+    println!("values {:?}", values);
+    let left = match generate_parser_body(vec![values[0].clone()], env) {
+        Ok(parser) => parser,
+        Err(err) => return Err(err),
+    };
+    let right = match generate_parser_body(
+        values.iter().skip(i + 1).map(|x| x.to_string()).collect(),
+        env,
+    ) {
+        Ok(parser) => parser,
+        Err(err) => return Err(err),
+    };
+
+    Ok(ParserDataType::And(And::new(left, right)))
+}
+
 fn generate_parser_numeric(value: &String) -> Result<ParserDataType, String> {
     let parser = match value.parse::<i64>() {
         Ok(value) => Atom::Num(NumAtom::new(vec![value])),
@@ -92,7 +116,9 @@ fn generate_parser_numeric(value: &String) -> Result<ParserDataType, String> {
 }
 
 fn generate_parser_string(value: &String) -> Result<ParserDataType, String> {
+    println!("value {}", value);
     let value_without_quotes = value.trim_matches('\"');
+    println!("value_without_quotes {}", value_without_quotes);
     let parser = Atom::String(StringAtom::new(value_without_quotes.to_string()));
 
     Ok(ParserDataType::Atom(parser))
@@ -110,6 +136,7 @@ fn generate_parser_body(values: Vec<String>, env: &mut Env) -> Result<ParserData
         if values[0].chars().next() == Some('\"') {
             return generate_parser_string(&values[0]);
         }
+        println!("values[0] {}", values[0]);
         match values[0].chars().next() {
             Some('0'..='9') => return generate_parser_numeric(&values[0]),
             Some('\"') => return generate_parser_string(&values[0]),
@@ -120,6 +147,9 @@ fn generate_parser_body(values: Vec<String>, env: &mut Env) -> Result<ParserData
     for (i, value) in values.iter().enumerate() {
         if value == "|" {
             return generate_or_parser(values, i, env);
+        }
+        if value == "&" {
+            return generate_and_parser(values, i, env);
         }
     }
     Err("generate_parser_body, Syntax error".to_string())

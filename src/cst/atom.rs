@@ -12,7 +12,7 @@ pub enum Atom {
 }
 
 impl Parser for Atom {
-    fn parse(&self, content: &String, env: &Env) -> Result<ParserDataType, String> {
+    fn parse(&self, content: &String, env: &Env) -> Result<(ParserDataType, String), String> {
         match self {
             Atom::Num(parser) => parser.parse(content, env),
             Atom::Char(parser) => parser.parse(content, env),

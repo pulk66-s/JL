@@ -12,18 +12,19 @@ impl Parser for StringAtom {
         &self,
         content: &String,
         _env: &crate::cst::parser::env::Env,
-    ) -> Result<ParserDataType, String> {
+    ) -> Result<(ParserDataType, String), String> {
         if content.starts_with(&self.value) {
-            Ok(ParserDataType::Atom(Atom::String(StringAtom {
-                value: self.value.clone(),
-            })))
+            Ok((
+                ParserDataType::Atom(Atom::String(self.clone())),
+                content[self.value.len()..].to_string(),
+            ))
         } else {
             Err(format!("Expected {}, got {}", self.value, content))
         }
     }
 
     fn to_string(&self) -> String {
-        self.value.clone()
+        format!("StringAtom: '{}'", self.value)
     }
 }
 

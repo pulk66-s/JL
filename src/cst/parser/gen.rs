@@ -17,10 +17,35 @@ fn read_file(file: &str) -> Result<String, String> {
 }
 
 fn split_content(content: &String) -> Vec<String> {
-    content
-        .split([' ', '\n', '\t'])
-        .map(|x| x.trim().to_string())
-        .collect()
+    let mut res = Vec::new();
+    let mut sub_content = String::new();
+    let mut string = false;
+
+    for letter in content.chars() {
+        match letter {
+            '\n' | '\t' => {
+                if sub_content.len() > 0 {
+                    res.push(sub_content.clone());
+                    sub_content.clear();
+                }
+            },
+            '\"' | '\'' => {
+                string = !string;
+                sub_content.push(letter);
+            },
+            ' ' if !string => {
+                if sub_content.len() > 0 {
+                    res.push(sub_content.clone());
+                    sub_content.clear();
+                }
+            },
+            _ => sub_content.push(letter),
+        }
+    }
+    if sub_content.len() > 0 {
+        res.push(sub_content);
+    }
+    res
 }
 
 pub fn generate_parser(file: &str) -> Result<(ParserDataType, Env), String> {

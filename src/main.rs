@@ -10,7 +10,7 @@ fn main() {
         Some(arg) => arg,
         None => {
             println!("No file provided");
-            return
+            return;
         }
     };
 
@@ -20,13 +20,13 @@ fn main() {
         Ok(parser) => parser,
         Err(err) => {
             println!("{}", err);
-            return
+            return;
         }
     };
-    let test_string = "1".to_string();
+    let test_string = "1 OK".to_string();
 
     match parser.parse(&test_string, &env) {
-        Ok(node) => println!("Parsed: {}", node.to_string()),
+        Ok((node, rest)) => println!("Parsed: {} rest {}", node.to_string(), rest),
         Err(err) => println!("Error: {}", err),
     }
 }

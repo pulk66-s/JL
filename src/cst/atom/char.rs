@@ -12,12 +12,13 @@ impl Parser for CharAtom {
         &self,
         content: &String,
         _env: &crate::cst::parser::env::Env,
-    ) -> Result<ParserDataType, String> {
+    ) -> Result<(ParserDataType, String), String> {
         if content.len() == 1 {
             if content.chars().next() == Some(self.value) {
-                return Ok(ParserDataType::Atom(Atom::Char(CharAtom {
-                    value: self.value,
-                })));
+                return Ok((
+                    ParserDataType::Atom(Atom::Char(self.clone())),
+                    content[1..].to_string(),
+                ));
             }
         }
         Err(format!("Expected: {}, Found: {}", self.value, content))

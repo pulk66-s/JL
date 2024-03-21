@@ -23,4 +23,16 @@ pub mod tests_keyword {
             Err(e) => panic!("Error: {}", e),
         }
     }
+
+    #[test]
+    fn test_elseif() {
+        let (parser, env) = generate_parser("src/tests/grammar/and.grammar").unwrap();
+        let test = "else if".to_string();
+
+        println!("{:?}", parser.to_string());
+        match parser.parse(&test, &env) {
+            Ok(_) => {}
+            Err(e) => panic!("Error: {}", e),
+        }
+    }
 }
