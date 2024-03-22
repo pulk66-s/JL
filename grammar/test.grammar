@@ -1,11 +1,22 @@
 main = function;
 
-function = type
-    & spaces
-    & word;
+function = function_keyword
+    & ' '*? & word & ' '*?
+    & '(' & function_args? & ')' & ' '*?
+    & "->" & ' '*? & type & ' '*?
+    & '{' & '}';
+
+function_args = ' '*? & function_arg* & last_arg? & ' '*?;
+
+function_arg_body = type & ' '*? & word;
+
+function_arg = function_arg_body & ' '*? & ',' & ' '*?;
+
+function_keyword = "fn";
+
+last_arg = function_arg_body;
 
 type = word;
 
 word = ['a'..'z']*;
 
-spaces = ' '*?;
