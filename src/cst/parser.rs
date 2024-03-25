@@ -217,7 +217,7 @@ fn generate_parser_body(values: Vec<String>, env: &mut Env) -> Result<ParserData
             Some('\"') => return generate_parser_string(&values[0]),
             Some('\'') => return generate_parser_char(&values[0]),
             Some('[') => return generate_parser_array(&values[0], env),
-            _ => return Err("generate_parser_body, Syntax error".to_string()),
+            _ => return Err("generate_parser_body, Syntax error".to_string() + &values[0]),
         }
     }
     for (i, value) in values.iter().enumerate() {
@@ -228,7 +228,7 @@ fn generate_parser_body(values: Vec<String>, env: &mut Env) -> Result<ParserData
             return generate_and_parser(values, i, env);
         }
     }
-    Err("generate_parser_body, Syntax error".to_string())
+    Err("generate_parser_body 2, Syntax error".to_string())
 }
 
 fn save_parser_in_env(name: String, parser: ParserDataType, env: &mut Env) {

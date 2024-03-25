@@ -23,7 +23,7 @@ fn main() {
             return;
         }
     };
-    let test_string = "fn main(int ac, unknown av) -> int {}".to_string();
+    let test_string = "fn fibonacci(int x) -> int { if (x == 1) { return 1; } else { return fibonacci(x - 1) + fibonacci(x - 2); }}".to_string();
 
     println!("parser {}", parser.to_string());
     println!("env {}", env.to_string());

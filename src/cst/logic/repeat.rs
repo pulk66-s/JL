@@ -82,14 +82,13 @@ impl Repeat {
 
 impl Parser for Repeat {
     fn to_string(&self) -> String {
-        let mut res = "{\"Repeat\": {\"expr\": ".to_string();
+        let mut res = "{\"Repeat\": {".to_string();
 
-        res += &self.expr.to_string();
-        res += "}, \"values\": [";
+        res += "\"values\": [";
         for value in self.values.iter() {
             res += &value.to_string();
         }
-        res += "]}";
+        res += "]}}";
         return res;
     }
 

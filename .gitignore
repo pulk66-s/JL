@@ -7,3 +7,4 @@ vgcore*
 # Added by cargo
 
 /target
+output
