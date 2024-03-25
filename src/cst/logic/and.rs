@@ -6,12 +6,9 @@ pub struct And {
 }
 
 impl And {
-    pub fn new(vec: Vec<ParserDataType>) -> And {
+    pub fn new(vec: Vec<Box<ParserDataType>>) -> And {
         And {
-            values: vec
-                .into_iter()
-                .map(|x| Box::new(x))
-                .collect::<Vec<Box<ParserDataType>>>(),
+            values: vec,
         }
     }
 }
@@ -27,8 +24,11 @@ impl Parser for And {
                 Err(e) => return Err(e),
             };
 
+            match expr {
+                ParserDataType::And(mut p) => result.append(&mut p.values),
+                e => result.push(Box::new(e)),
+            }
             rest = res.clone();
-            result.push(expr);
         }
         Ok((ParserDataType::And(And::new(result)), rest.to_string()))
     }

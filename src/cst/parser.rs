@@ -131,7 +131,7 @@ fn generate_and_parser(
         Err(err) => return Err(err),
     };
 
-    Ok(ParserDataType::And(And::new(left, right)))
+    Ok(ParserDataType::And(And::new(vec![Box::new(left), Box::new(right)])))
 }
 
 fn generate_parser_numeric(value: &String) -> Result<ParserDataType, String> {
