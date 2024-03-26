@@ -1,9 +1,12 @@
 mod cst;
+mod ast;
 mod tests;
 
 use std::env;
 
 use cst::parser::gen::generate_parser;
+
+use crate::ast::parse::create_ast;
 
 fn main() {
     let first_arg = match env::args().nth(1) {
@@ -23,12 +26,26 @@ fn main() {
             return;
         }
     };
-    let test_string = "fn fibonacci(int x) -> int { if (x == 1) { return 1; } else { return fibonacci(x - 1) + fibonacci(x - 2); }}".to_string();
+    let test_string = "fn fibonacci(int x, int y) -> int { if (x == 1) { return 1; } else { return fibonacci(x - 1) + fibonacci(x - 2); }}".to_string();
 
     println!("parser {}", parser.to_string());
     println!("env {}", env.to_string());
-    match parser.parse(&test_string, &env) {
-        Ok((node, rest)) => println!("Parsed: {} rest {}", node.to_string(), rest),
-        Err(err) => println!("Error: {}", err),
-    }
+    let parser = match parser.parse(&test_string, &env) {
+        Ok((node, rest)) => {
+            println!("Parsed: {} rest {}", node.to_string(), rest);
+            node
+        },
+        Err(err) => {
+            println!("Error: {}", err);
+            return;
+        },
+    };
+    let ast = match create_ast(parser) {
+        Ok(ast) => ast,
+        Err(err) => {
+            println!("Error: {}", err);
+            return;
+        }
+    };
+    println!("ast {:?}", ast);
 }
