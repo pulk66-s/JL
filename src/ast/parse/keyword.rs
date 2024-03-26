@@ -1,6 +1,9 @@
 use either::Either::{self, Left, Right};
 
-use crate::cst::{atom::Atom, parser::{Parser, ParserDataType}};
+use crate::cst::{
+    atom::Atom,
+    parser::{Parser, ParserDataType},
+};
 
 #[derive(Clone)]
 pub struct Tokens {
@@ -18,6 +21,22 @@ pub enum TokenType {
 impl Tokens {
     pub fn new(tokens: ParserDataType) -> Tokens {
         Tokens { tokens, index: 0 }
+    }
+
+    pub fn peek(&mut self) -> Option<Either<ParserDataType, TokenType>> {
+        match self.next() {
+            Some(t) => {
+                self.prev();
+                Some(t)
+            }
+            None => None,
+        }
+    }
+
+    pub fn prev(&mut self) {
+        if self.index > 0 {
+            self.index -= 1;
+        }
     }
 
     pub fn next(&mut self) -> Option<Either<ParserDataType, TokenType>> {
@@ -61,8 +80,8 @@ impl Tokens {
                 } else {
                     None
                 }
-            },
-            _ => None
+            }
+            _ => None,
         }
     }
 }
@@ -73,7 +92,10 @@ pub fn get_deep_token(tokens: &mut Tokens) -> Option<TokenType> {
             Left(t) => get_deep_token(&mut Tokens::new(t)),
             Right(t) => Some(t),
         },
-        None => None,
+        None => {
+            tokens.prev();
+            None
+        },
     }
 }
 
