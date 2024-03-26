@@ -135,14 +135,14 @@ fn check_number_stmt(tokens: &mut Tokens) -> Option<AstExpr> {
     let save_index = tokens.index;
 
     println!(
-        "check_number_stmt tokens {:?} index {}",
+        "check_number_stmt number tokens {:?} index {}",
         tokens.tokens.to_string(),
         tokens.index
     );
     match get_deep_token(tokens) {
         Some(TokenType::Number(n)) => {
             tokens.next();
-            Some(AstExpr::VARIABLE_CALL(n.to_string()))
+            Some(AstExpr::NUMBER(n))
         }
         _ => {
             tokens.index = save_index;

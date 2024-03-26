@@ -16,6 +16,7 @@ pub enum AstExpr {
     RETURN(AstReturn),
     BINOP(AstBinop),
     VARIABLE_CALL(String),
+    NUMBER(i64),
 }
 
 #[derive(Debug)]

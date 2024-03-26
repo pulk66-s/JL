@@ -44,7 +44,7 @@ right_expr = binop | right_expr_value;
 
 right_expr_value = function_call | number | word;
 
-number = ['0'..'9']*;
+number = [0..9]*;
 
 binop = right_expr_value & spaces & binop_op & spaces & right_expr;
 
