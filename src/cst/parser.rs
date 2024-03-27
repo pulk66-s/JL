@@ -17,7 +17,7 @@ pub enum ParserDataType {
     Repeat(Repeat),
     Maybe(Maybe),
     Array(Array),
-    None
+    None,
 }
 
 impl ParserDataType {
@@ -30,7 +30,7 @@ impl ParserDataType {
             ParserDataType::Repeat(value) => value.to_string(),
             ParserDataType::Maybe(value) => value.to_string(),
             ParserDataType::Array(value) => value.to_string(),
-            ParserDataType::None => "\"None\"".to_string()
+            ParserDataType::None => "\"None\"".to_string(),
         }
     }
 
@@ -59,7 +59,7 @@ impl ParserDataType {
             ParserDataType::Repeat(value) => value.parse(content, env),
             ParserDataType::Maybe(value) => value.parse(content, env),
             ParserDataType::Array(value) => value.parse(content, env),
-            ParserDataType::None => Err("None can't be parsed".to_string())
+            ParserDataType::None => Err("None can't be parsed".to_string()),
         }
     }
 }
@@ -131,7 +131,10 @@ fn generate_and_parser(
         Err(err) => return Err(err),
     };
 
-    Ok(ParserDataType::And(And::new(vec![Box::new(left), Box::new(right)])))
+    Ok(ParserDataType::And(And::new(vec![
+        Box::new(left),
+        Box::new(right),
+    ])))
 }
 
 fn generate_parser_numeric(value: &String) -> Result<ParserDataType, String> {
@@ -152,6 +155,16 @@ fn generate_parser_string(value: &String) -> Result<ParserDataType, String> {
 fn generate_parser_char(value: &String) -> Result<ParserDataType, String> {
     let value_without_quotes = value.trim_matches('\'');
     let parser = Atom::Char(CharAtom::new(match value_without_quotes.chars().next() {
+        Some('\\') => match value_without_quotes.chars().nth(1) {
+            Some('n') => '\n',
+            Some('t') => '\t',
+            Some('r') => '\r',
+            Some('0') => '\0',
+            Some('\'') => '\'',
+            Some('\"') => '\"',
+            Some('\\') => '\\',
+            _ => return Err("generate_parser_char, Syntax error".to_string()),
+        },
         Some(value) => value,
         None => return Err("generate_parser_char, Syntax error".to_string()),
     }));

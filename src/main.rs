@@ -2,7 +2,7 @@ mod cst;
 mod ast;
 mod tests;
 
-use std::env;
+use std::{env, fs::read_to_string};
 
 use cst::parser::gen::generate_parser;
 
@@ -16,8 +16,10 @@ fn main() {
             return;
         }
     };
+    let other_args = env::args().skip(2).collect::<Vec<String>>();
 
     println!("Generating parser from file: {}", first_arg);
+    println!("Other args: {:?}", other_args);
 
     let (mut parser, env) = match generate_parser(&first_arg) {
         Ok(parser) => parser,
@@ -26,11 +28,24 @@ fn main() {
             return;
         }
     };
-    let test_string = "fn add(int x, int y) -> int { return x + y + 3; }}".to_string();
+    let file = match other_args.get(0) {
+        Some(file) => file,
+        None => {
+            println!("No file provided");
+            return;
+        }
+    };
+    let file_content = match read_to_string(file) {
+        Ok(content) => content,
+        Err(err) => {
+            println!("Error reading file: {}", err);
+            return;
+        }
+    };
 
     println!("parser {}", parser.to_string());
     println!("env {}", env.to_string());
-    let parser = match parser.parse(&test_string, &env) {
+    let parser = match parser.parse(&file_content, &env) {
         Ok((node, rest)) => {
             println!("Parsed: {} rest {}", node.to_string(), rest);
             node

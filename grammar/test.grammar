@@ -32,7 +32,9 @@ type = word;
 
 word = ['a'..'z']*;
 
-spaces = ' '*?;
+spaces = possible_spaces*?;
+
+possible_spaces = ' ' | '\n'; 
 
 return_keyword = "return";
 
