@@ -1,6 +1,6 @@
 use super::AstExpr;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct AstBinop {
     pub left: Box<AstExpr>,
     pub right: Box<AstExpr>,

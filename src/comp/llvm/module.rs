@@ -3,6 +3,7 @@ use super::{
     llvm_object::LlvmObject,
 };
 
+#[derive(Clone)]
 pub struct Module {
     pub builder: Builder,
     pub functions_definitions: Vec<FunctionDefinition>,
@@ -14,6 +15,18 @@ impl Module {
             builder: Builder::new(),
             functions_definitions: Vec::new(),
         }
+    }
+
+    pub fn current_function(&self) -> Option<FunctionDefinition> {
+        match self.functions_definitions.last() {
+            Some(l) => Some(l.clone()),
+            None => None
+        }
+    }
+
+    pub fn update_current_function(&mut self, f: FunctionDefinition) {
+        self.functions_definitions.pop();
+        self.functions_definitions.push(f);
     }
 }
 

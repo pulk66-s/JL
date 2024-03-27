@@ -1,6 +1,6 @@
 use super::AstExpr;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct AstReturn {
     pub value: Box<AstExpr>,
 }

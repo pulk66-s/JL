@@ -1,5 +1,6 @@
 use crate::comp::llvm::{builder::types::Type, llvm_object::LlvmObject};
 
+#[derive(Debug, Clone)]
 pub struct FunctionParam {
     pub name: String,
     pub ty: Type,
@@ -13,6 +14,6 @@ impl FunctionParam {
 
 impl LlvmObject for FunctionParam {
     fn to_llvm_ir(&self) -> String {
-        format!("{} {}", self.ty.to_llvm_ir(), self.name)
+        format!("{} %{}", self.ty.to_llvm_ir(), self.name)
     }
 }

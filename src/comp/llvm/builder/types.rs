@@ -1,5 +1,6 @@
 use crate::comp::llvm::llvm_object::LlvmObject;
 
+#[derive(Clone)]
 pub struct TypesBuilder {
 
 }
@@ -12,6 +13,7 @@ impl TypesBuilder {
     }
 }
 
+#[derive(Debug, Clone)]
 pub enum Type {
     Int32
 }

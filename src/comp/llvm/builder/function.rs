@@ -1,4 +1,8 @@
-use self::{block::{Block, BlockBuilder}, define::FunctionDefinition, param::FunctionParam};
+use self::{
+    block::{expressions::terminator::TerminatorBuilder, Block, BlockBuilder},
+    define::FunctionDefinition,
+    param::FunctionParam,
+};
 
 use super::types::Type;
 
@@ -6,14 +10,17 @@ pub mod block;
 pub mod define;
 pub mod param;
 
+#[derive(Clone)]
 pub struct FunctionBuilder {
-    pub block: BlockBuilder
+    pub block: BlockBuilder,
+    pub terminator: TerminatorBuilder,
 }
 
 impl FunctionBuilder {
     pub fn new() -> Self {
         Self {
-            block: BlockBuilder::new()
+            block: BlockBuilder::new(),
+            terminator: TerminatorBuilder::new(),
         }
     }
 

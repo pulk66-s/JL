@@ -1,11 +1,14 @@
-use crate::comp::llvm::llvm_object::LlvmObject;
+use crate::comp::llvm::{builder::types::Type, llvm_object::LlvmObject};
 
 use self::return_term::Return;
 
+use super::ValueExpression;
+
 pub mod return_term;
 
+#[derive(Debug, Clone)]
 pub enum Terminator {
-    RETURN(Return)
+    RETURN(Return),
 }
 
 impl LlvmObject for Terminator {
@@ -13,5 +16,24 @@ impl LlvmObject for Terminator {
         match self {
             Terminator::RETURN(return_term) => return_term.to_llvm_ir(),
         }
+    }
+}
+
+#[derive(Clone)]
+pub struct TerminatorBuilder {}
+
+impl TerminatorBuilder {
+    pub fn new() -> Self {
+        Self {}
+    }
+
+    pub fn create_return(&self, value: ValueExpression, ty: Option<Type>) -> Terminator {
+        Terminator::RETURN(Return::new(
+            value,
+            match ty {
+                Some(t) => t,
+                None => Type::Int32,
+            },
+        ))
     }
 }

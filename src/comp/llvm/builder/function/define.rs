@@ -2,11 +2,12 @@ use crate::comp::llvm::{builder::types::Type, llvm_object::LlvmObject};
 
 use super::{block::Block, param::FunctionParam};
 
+#[derive(Debug, Clone)]
 pub struct FunctionDefinition {
     pub name: String,
     pub return_type: Type,
     pub params: Vec<FunctionParam>,
-    pub body: Vec<Block>,
+    pub body: Vec<Block>
 }
 
 impl FunctionDefinition {
@@ -22,6 +23,22 @@ impl FunctionDefinition {
             params,
             body,
         }
+    }
+
+    pub fn current_block(&self) -> Option<Block> {
+        match self.body.last() {
+            Some(l) => Some(l.clone()),
+            None => None
+        }
+    }
+
+    pub fn update_current_block(&mut self, block: Block) {
+        self.body.pop();
+        self.body.push(block);
+    }
+
+    pub fn add_block(&mut self, block: Block) {
+        self.body.push(block);
     }
 }
 
