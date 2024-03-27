@@ -73,7 +73,6 @@ impl Tokens {
             },
             ParserDataType::Repeat(r) => {
                 if self.index < r.values.len() {
-                    println!("values {} index {}", r.to_string(), self.index);
                     let token = r.values[self.index].clone();
                     self.index += 1;
                     Some(Left(token))

@@ -132,12 +132,8 @@ pub fn create_ast_func_def(tokens: &mut Tokens) -> Result<AstFuncDef, String> {
 
     let fn_params = match get_fn_params(tokens) {
         Ok(r) => r,
-        Err(e) => {
-            println!("err {}", e);
-            return Err(e);
-        }
+        Err(e) => return Err(e)
     };
-    println!("fn_params {:?}", fn_params);
 
     tokens.next();
     tokens.next();
@@ -149,19 +145,16 @@ pub fn create_ast_func_def(tokens: &mut Tokens) -> Result<AstFuncDef, String> {
         Ok(r) => r,
         Err(e) => return Err(e),
     };
-    println!("fn_type {:?}", fn_type);
 
     tokens.next();
     tokens.next();
     tokens.next();
 
-    println!("tokens {:?} index {}", tokens.tokens.to_string(), tokens.index);
     let body = match fetch_fn_body(tokens) {
         Ok(r) => r,
         Err(e) => return Err(e),
     };
 
-    println!("body {:?}", body);
     Ok(AstFuncDef {
         name: fn_name,
         args: fn_params,

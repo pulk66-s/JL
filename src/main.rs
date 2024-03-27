@@ -1,12 +1,13 @@
 mod cst;
 mod ast;
 mod tests;
+mod comp;
 
 use std::{env, fs::read_to_string};
 
 use cst::parser::gen::generate_parser;
 
-use crate::ast::parse::create_ast;
+use crate::{ast::parse::create_ast, comp::llvm::compile_with_llvm};
 
 fn main() {
     let first_arg = match env::args().nth(1) {
@@ -63,4 +64,11 @@ fn main() {
         }
     };
     println!("ast {:?}", ast);
+    match compile_with_llvm(ast) {
+        Ok(r) => println!("Result: {}", r),
+        Err(e) => {
+            println!("Err {}", e);
+            return;
+        }
+    };
 }

@@ -12,16 +12,6 @@ use super::{
 fn check_return_stmt(tokens: &mut Tokens) -> Option<AstExpr> {
     let save_index = tokens.index;
 
-    println!(
-        "check_return_stmt tokens {:?} index {} peek {:?}",
-        tokens.clone().tokens.to_string(),
-        tokens.clone().index,
-        match tokens.peek() {
-            Some(Right(t)) => format!("some rigth {:?}", t),
-            Some(Left(t)) => t.to_string(),
-            None => "None".to_string(),
-        }
-    );
     match get_deep_token(tokens) {
         Some(TokenType::String(s)) if s == "return" => {
             tokens.next();
@@ -41,7 +31,6 @@ fn check_return_stmt(tokens: &mut Tokens) -> Option<AstExpr> {
 }
 
 fn is_valid_binop(op: String) -> bool {
-    println!("is_valid_binop {:?}", op);
     match op.as_str() {
         "+" | "-" | "*" | "/" | "%" | "==" | "<=" | ">=" | "<" | ">" | "!=" | "&&" | "||" | "^"
         | "&" | "|" | "<<" | ">>" | ">>>" | "++" | "--" | "+=" | "-=" | "*=" | "/=" | "%="
@@ -52,20 +41,7 @@ fn is_valid_binop(op: String) -> bool {
 
 fn check_binop_stmt(tokens: &mut Tokens) -> Option<AstExpr> {
     let save_index = tokens.index;
-    println!(
-        "start {:?}, index {}",
-        tokens.tokens.to_string(),
-        tokens.index
-    );
     loop {
-        println!(
-            "loop {:?}",
-            match tokens.peek() {
-                Some(Right(t)) => format!("{:?}", t),
-                Some(Left(t)) => t.to_string(),
-                None => "None".to_string(),
-            }
-        );
         let binop = match get_deep_token(tokens) {
             Some(TokenType::String(op)) if is_valid_binop(op.to_string()) => op,
             Some(TokenType::Char(op)) if is_valid_binop(op.to_string()) => op.to_string(),
@@ -75,13 +51,10 @@ fn check_binop_stmt(tokens: &mut Tokens) -> Option<AstExpr> {
             }
             _ => continue,
         };
-        println!("Loop {:?} binop {}", tokens.index, binop);
 
         tokens.prev();
         tokens.prev();
         tokens.prev();
-
-        println!("Loop {:?}", tokens.index);
 
         let left = match create_ast_expr_value(tokens) {
             Ok(e) => e,
@@ -90,7 +63,6 @@ fn check_binop_stmt(tokens: &mut Tokens) -> Option<AstExpr> {
                 return None;
             }
         };
-        println!("Left {:?}", left);
 
         tokens.next();
         tokens.next();
@@ -114,11 +86,6 @@ fn check_binop_stmt(tokens: &mut Tokens) -> Option<AstExpr> {
 fn check_identifier_stmt(tokens: &mut Tokens) -> Option<AstExpr> {
     let save_index = tokens.index;
 
-    println!(
-        "check_identifier_stmt tokens {:?} index {}",
-        tokens.tokens.to_string(),
-        tokens.index
-    );
     match get_deep_token(tokens) {
         Some(TokenType::String(s)) => {
             tokens.next();
@@ -134,11 +101,6 @@ fn check_identifier_stmt(tokens: &mut Tokens) -> Option<AstExpr> {
 fn check_number_stmt(tokens: &mut Tokens) -> Option<AstExpr> {
     let save_index = tokens.index;
 
-    println!(
-        "check_number_stmt number tokens {:?} index {}",
-        tokens.tokens.to_string(),
-        tokens.index
-    );
     match get_deep_token(tokens) {
         Some(TokenType::Number(n)) => {
             tokens.next();

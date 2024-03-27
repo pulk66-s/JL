@@ -11,7 +11,6 @@ pub mod variable;
 
 #[derive(Debug)]
 pub enum AstExpr {
-    FUNC_DEF(AstFuncDef),
     VARIABLE_DECL(AstVariableDecl),
     RETURN(AstReturn),
     BINOP(AstBinop),
