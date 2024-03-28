@@ -5,21 +5,27 @@ use super::ValueExpression;
 #[derive(Debug, Clone)]
 pub struct Identifier {
     pub name: String,
-    pub value: Box<ValueExpression>,
+    pub value: Option<Box<ValueExpression>>,
 }
 
 impl Identifier {
-    pub fn new(name: String, value: ValueExpression) -> Self {
+    pub fn new(name: String, value: Option<ValueExpression>) -> Self {
         Self {
             name,
-            value: Box::new(value),
+            value: match value {
+                Some(v) => Some(Box::new(v)),
+                None => None,
+            },
         }
     }
 }
 
 impl LlvmObject for Identifier {
     fn to_llvm_ir(&self) -> String {
-        format!("%{} = {}", self.name, self.value.to_llvm_ir())
+        match self.value {
+            Some(ref v) => format!("%{} = {}", self.name, v.to_llvm_ir()),
+            None => format!("%{}", self.name),
+        }
     }
 }
 
@@ -31,7 +37,7 @@ impl IdentifierBuilder {
         Self {}
     }
 
-    pub fn build(&self, name: String, value: ValueExpression) -> Identifier {
+    pub fn build(&self, name: String, value: Option<ValueExpression>) -> Identifier {
         Identifier::new(name, value)
     }
 }

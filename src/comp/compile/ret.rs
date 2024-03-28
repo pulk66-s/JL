@@ -24,7 +24,7 @@ fn create_ret_binop(binop: BinOp, mut module: Module) -> Result<(Terminator, Mod
         .function
         .block
         .identifier
-        .build("ret".to_string(), ValueExpression::BINOP(binop));
+        .build("ret".to_string(), Some(ValueExpression::BINOP(binop)));
 
     current_block.add_expression(BlockExpression::IDENTIFIER(identifier.clone()));
     current_function.update_current_block(current_block);

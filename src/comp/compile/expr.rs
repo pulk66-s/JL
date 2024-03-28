@@ -1,7 +1,9 @@
 use crate::{
     ast::AstExpr,
     comp::llvm::{
-        builder::function::block::expressions::{BlockExpression, ValueExpression},
+        builder::function::block::expressions::{
+            identifier::Identifier, BlockExpression, ValueExpression,
+        },
         module::Module,
     },
 };
@@ -19,6 +21,13 @@ pub fn create_expr(expr: &AstExpr, module: Module) -> Result<(BlockExpression, M
             Ok((t, module)) => Ok((BlockExpression::TERMINATOR(t), module)),
             Err(e) => Err(e),
         },
-        e => Err(format!("Unknown expression {}", e.to_string())),
+        AstExpr::VARIABLE_CALL(v) => Ok((
+            BlockExpression::VALUE(ValueExpression::IDENTIFIER(Identifier::new(v, None))),
+            module,
+        )),
+        e => Err(format!(
+            "Unknown expression in create_expr {}",
+            e.to_string()
+        )),
     }
 }
