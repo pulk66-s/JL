@@ -7,7 +7,7 @@ use std::{env, fs::read_to_string};
 
 use cst::parser::gen::generate_parser;
 
-use crate::{ast::parse::create_ast, comp::llvm::compile_with_llvm};
+use crate::{ast::parse::create_ast, comp::compile::compile_with_llvm};
 
 fn main() {
     let first_arg = match env::args().nth(1) {
