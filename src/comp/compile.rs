@@ -3,22 +3,12 @@ pub mod expr;
 pub mod function;
 pub mod ret;
 
-use crate::ast::{binop::AstBinop, returnstmt::AstReturn, variable::AstVariableDecl, Ast, AstExpr};
+use crate::ast::{variable::AstVariableDecl, Ast};
 
-use self::{binop::create_binop_expr, expr::create_expr, function::create_function_body};
+use self::function::create_function_body;
 
 use super::llvm::{
-    builder::{
-        function::{
-            block::expressions::{
-                binop::{BinOp, BinOpType},
-                terminator::Terminator,
-                BlockExpression, ValueExpression,
-            },
-            param::FunctionParam,
-        },
-        types::Type,
-    },
+    builder::{function::param::FunctionParam, types::Type},
     llvm_object::LlvmObject,
 };
 
@@ -27,6 +17,7 @@ use super::llvm::module::Module;
 fn create_type(name: &str) -> Option<Type> {
     match name {
         "int" => Some(Type::Int32),
+        "bool" => Some(Type::Bool),
         _ => None,
     }
 }

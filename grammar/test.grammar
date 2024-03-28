@@ -30,7 +30,9 @@ last_arg = function_def_arg_body;
 
 type = word;
 
-word = ['a'..'z']*;
+word = possible_letter*;
+
+possible_letter = ['a'..'z'] | ['A'..'Z'];
 
 spaces = possible_spaces*?;
 

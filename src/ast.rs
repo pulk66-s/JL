@@ -1,5 +1,5 @@
 use self::{
-    binop::AstBinop, func::definition::AstFuncDef, returnstmt::AstReturn, variable::AstVariableDecl,
+    binop::AstBinop, condition::ConditionAst, func::definition::AstFuncDef, returnstmt::AstReturn, variable::AstVariableDecl
 };
 
 pub mod binop;
@@ -8,6 +8,7 @@ pub mod func;
 pub mod parse;
 pub mod returnstmt;
 pub mod variable;
+pub mod condition;
 
 #[derive(Debug, Clone)]
 pub enum AstExpr {
@@ -16,6 +17,7 @@ pub enum AstExpr {
     BINOP(AstBinop),
     VARIABLE_CALL(String),
     NUMBER(i64),
+    CONDITION(ConditionAst)
 }
 
 impl AstExpr {
@@ -26,6 +28,7 @@ impl AstExpr {
             AstExpr::BINOP(binop) => format!("Binop: {:?}", binop),
             AstExpr::VARIABLE_CALL(name) => format!("Variable call: {}", name),
             AstExpr::NUMBER(n) => format!("Number: {}", n),
+            AstExpr::CONDITION(c) => format!("Condition: {}", c.to_string())
         }
     }
 }

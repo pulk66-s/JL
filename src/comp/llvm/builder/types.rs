@@ -15,13 +15,15 @@ impl TypesBuilder {
 
 #[derive(Debug, Clone)]
 pub enum Type {
-    Int32
+    Int32,
+    Bool
 }
 
 impl LlvmObject for Type {
     fn to_llvm_ir(&self) -> String {
         match self {
-            Type::Int32 => "i32".to_string()
+            Type::Int32 => "i32".to_string(),
+            Type::Bool => "i1".to_string()
         }
     }
 }

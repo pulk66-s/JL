@@ -1,9 +1,6 @@
 use either::Either::{self, Left, Right};
 
-use crate::cst::{
-    atom::Atom,
-    parser::{Parser, ParserDataType},
-};
+use crate::cst::{atom::Atom, parser::ParserDataType};
 
 #[derive(Clone)]
 pub struct Tokens {
@@ -94,7 +91,7 @@ pub fn get_deep_token(tokens: &mut Tokens) -> Option<TokenType> {
         None => {
             tokens.prev();
             None
-        },
+        }
     }
 }
 
