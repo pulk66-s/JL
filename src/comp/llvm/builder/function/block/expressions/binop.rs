@@ -1,6 +1,6 @@
 use crate::comp::llvm::{builder::types::Type, llvm_object::LlvmObject};
 
-use super::ValueExpression;
+use super::DirectValueExpression;
 
 #[derive(Debug, Clone)]
 pub enum BinOpType {
@@ -20,8 +20,8 @@ impl BinOpBuilder {
     pub fn create_binop(
         &self,
         op: BinOpType,
-        lhs: ValueExpression,
-        rhs: ValueExpression,
+        lhs: DirectValueExpression,
+        rhs: DirectValueExpression,
         result_type: Option<Type>,
     ) -> BinOp {
         BinOp::new(
@@ -34,22 +34,31 @@ impl BinOpBuilder {
             rhs,
         )
     }
+
+    pub fn create_op(&self, symbol: String) -> Option<BinOpType> {
+        match symbol.as_str() {
+            "+" => Some(BinOpType::ADD),
+            "-" => Some(BinOpType::SUB),
+            "*" => Some(BinOpType::MUL),
+            _ => None,
+        }
+    }
 }
 
 #[derive(Debug, Clone)]
 pub struct BinOp {
     pub result_type: Type,
     pub op_type: BinOpType,
-    pub lhs: Box<ValueExpression>,
-    pub rhs: Box<ValueExpression>,
+    pub lhs: Box<DirectValueExpression>,
+    pub rhs: Box<DirectValueExpression>,
 }
 
 impl BinOp {
     pub fn new(
         op_type: BinOpType,
         result_type: Type,
-        lhs: ValueExpression,
-        rhs: ValueExpression,
+        lhs: DirectValueExpression,
+        rhs: DirectValueExpression,
     ) -> Self {
         Self {
             op_type,

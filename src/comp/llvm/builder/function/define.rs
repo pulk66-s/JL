@@ -25,18 +25,6 @@ impl FunctionDefinition {
         }
     }
 
-    pub fn current_block(&self) -> Option<Block> {
-        match self.body.last() {
-            Some(l) => Some(l.clone()),
-            None => None
-        }
-    }
-
-    pub fn update_current_block(&mut self, block: Block) {
-        self.body.pop();
-        self.body.push(block);
-    }
-
     pub fn add_block(&mut self, block: Block) {
         self.body.push(block);
     }
@@ -45,7 +33,7 @@ impl FunctionDefinition {
 impl LlvmObject for FunctionDefinition {
     fn to_llvm_ir(&self) -> String {
         format!(
-            "define {} @{}({}) {{{}}}",
+            "define {} @{}({}) {{\n{}}}",
             self.return_type.to_llvm_ir(),
             self.name,
             self.params

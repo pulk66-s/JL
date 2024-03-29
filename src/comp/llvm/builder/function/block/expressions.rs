@@ -7,18 +7,29 @@ pub mod identifier;
 pub mod terminator;
 
 #[derive(Debug, Clone)]
-pub enum ValueExpression {
+pub enum DirectValueExpression {
     NUMBER(i64),
     IDENTIFIER(Identifier),
+}
+
+impl LlvmObject for DirectValueExpression {
+    fn to_llvm_ir(&self) -> String {
+        match self {
+            DirectValueExpression::NUMBER(n) => n.to_string(),
+            DirectValueExpression::IDENTIFIER(identifier) => identifier.to_llvm_ir(),
+        }
+    }
+}
+
+#[derive(Debug, Clone)]
+pub enum IndirectValueExpression {
     BINOP(BinOp),
 }
 
-impl LlvmObject for ValueExpression {
+impl LlvmObject for IndirectValueExpression {
     fn to_llvm_ir(&self) -> String {
         match self {
-            ValueExpression::NUMBER(n) => n.to_string(),
-            ValueExpression::IDENTIFIER(identifier) => identifier.to_llvm_ir(),
-            ValueExpression::BINOP(binop) => binop.to_llvm_ir(),
+            IndirectValueExpression::BINOP(binop) => binop.to_llvm_ir(),
         }
     }
 }
@@ -27,7 +38,6 @@ impl LlvmObject for ValueExpression {
 pub enum BlockExpression {
     IDENTIFIER(Identifier),
     TERMINATOR(Terminator),
-    VALUE(ValueExpression),
 }
 
 impl LlvmObject for BlockExpression {
@@ -35,7 +45,6 @@ impl LlvmObject for BlockExpression {
         match self {
             BlockExpression::IDENTIFIER(identifier) => identifier.to_llvm_ir(),
             BlockExpression::TERMINATOR(terminator) => terminator.to_llvm_ir(),
-            BlockExpression::VALUE(value) => value.to_llvm_ir(),
         }
     }
 }

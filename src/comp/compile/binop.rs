@@ -1,44 +1,32 @@
 use crate::{
     ast::binop::AstBinop,
     comp::llvm::{
-        builder::function::block::expressions::{
-            binop::{BinOp, BinOpType},
-            BlockExpression, ValueExpression,
-        },
+        builder::function::block::{expressions::binop::BinOp, Block},
         module::Module,
     },
 };
 
-use super::expr::create_expr;
+use super::expr::convert_ast_to_direct_value;
 
-fn create_binop_type(
-    lhs: ValueExpression,
-    rhs: ValueExpression,
-    op: String,
-    module: Module,
-) -> Result<(BinOp, Module), String> {
-    match op.as_str() {
-        "+" => Ok((
-            module
-                .builder
-                .binop
-                .create_binop(BinOpType::ADD, lhs, rhs, None),
-            module,
-        )),
-        _ => Err("Unknown operator".to_string()),
-    }
-}
+pub fn compile_binop(
+    ast: &AstBinop,
+    module: &mut Module,
+    current_block: &mut Block,
+) -> Result<BinOp, String> {
+    let lhs = match convert_ast_to_direct_value(&*ast.left, module, current_block) {
+        Ok(r) => r,
+        Err(e) => return Err(e),
+        _ => return Err("compile_binop Unknown expression lhs".to_string()),
+    };
+    let rhs = match convert_ast_to_direct_value(&*ast.right, module, current_block) {
+        Ok(r) => r,
+        Err(e) => return Err(e),
+        _ => return Err("compile_binop Unknown expression rhs".to_string()),
+    };
+    let op = match module.builder.binop.create_op(ast.op.clone()) {
+        Some(x) => x,
+        None => return Err("Unknown operator".to_string()),
+    };
 
-pub fn create_binop_expr(binop: AstBinop, module: Module) -> Result<(BinOp, Module), String> {
-    match create_expr(&binop.left, module) {
-        Ok((BlockExpression::VALUE(lhs), module)) => match create_expr(&binop.right, module) {
-            Ok((BlockExpression::VALUE(rhs), module)) => {
-                create_binop_type(lhs, rhs, binop.op, module)
-            }
-            Err(e) => Err(e),
-            _ => Err("Error in binop".to_string()),
-        },
-        Err(e) => Err(e),
-        _ => Err("Unknown binop".to_string()),
-    }
+    Ok(module.builder.binop.create_binop(op, lhs, rhs, None))
 }

@@ -1,15 +1,15 @@
 use crate::comp::llvm::llvm_object::LlvmObject;
 
-use super::ValueExpression;
+use super::IndirectValueExpression;
 
 #[derive(Debug, Clone)]
 pub struct Identifier {
     pub name: String,
-    pub value: Option<Box<ValueExpression>>,
+    pub value: Option<Box<IndirectValueExpression>>,
 }
 
 impl Identifier {
-    pub fn new(name: String, value: Option<ValueExpression>) -> Self {
+    pub fn new(name: String, value: Option<IndirectValueExpression>) -> Self {
         Self {
             name,
             value: match value {
@@ -37,7 +37,7 @@ impl IdentifierBuilder {
         Self {}
     }
 
-    pub fn build(&self, name: String, value: Option<ValueExpression>) -> Identifier {
+    pub fn build(&self, name: String, value: Option<IndirectValueExpression>) -> Identifier {
         Identifier::new(name, value)
     }
 }

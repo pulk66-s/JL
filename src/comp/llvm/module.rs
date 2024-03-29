@@ -16,18 +16,6 @@ impl Module {
             functions_definitions: Vec::new(),
         }
     }
-
-    pub fn current_function(&self) -> Option<FunctionDefinition> {
-        match self.functions_definitions.last() {
-            Some(l) => Some(l.clone()),
-            None => None
-        }
-    }
-
-    pub fn update_current_function(&mut self, f: FunctionDefinition) {
-        self.functions_definitions.pop();
-        self.functions_definitions.push(f);
-    }
 }
 
 impl LlvmObject for Module {

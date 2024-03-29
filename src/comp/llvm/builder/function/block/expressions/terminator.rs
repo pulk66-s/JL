@@ -2,7 +2,7 @@ use crate::comp::llvm::{builder::types::Type, llvm_object::LlvmObject};
 
 use self::return_term::Return;
 
-use super::ValueExpression;
+use super::DirectValueExpression;
 
 pub mod return_term;
 
@@ -27,13 +27,7 @@ impl TerminatorBuilder {
         Self {}
     }
 
-    pub fn create_return(&self, value: ValueExpression, ty: Option<Type>) -> Terminator {
-        Terminator::RETURN(Return::new(
-            value,
-            match ty {
-                Some(t) => t,
-                None => Type::Int32,
-            },
-        ))
+    pub fn create_return(&self, value: DirectValueExpression, ty: Option<Type>) -> Terminator {
+        Terminator::RETURN(Return::new(value, ty))
     }
 }

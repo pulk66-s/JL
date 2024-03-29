@@ -1,65 +1,23 @@
 use crate::{
     ast::returnstmt::AstReturn,
     comp::llvm::{
-        builder::function::block::expressions::{
-            binop::BinOp, terminator::Terminator, BlockExpression, ValueExpression,
-        },
+        builder::function::block::{expressions::terminator::return_term::Return, Block},
         module::Module,
     },
 };
 
-use super::expr::create_expr;
+use super::expr::convert_ast_to_direct_value;
 
-fn create_ret_binop(binop: BinOp, mut module: Module) -> Result<(Terminator, Module), String> {
-    let mut current_function = match module.current_function() {
-        Some(f) => f,
-        None => return Err("create_return_expr no function".to_string()),
+pub fn create_llvm_ret(
+    ast: &AstReturn,
+    module: &mut Module,
+    current_block: &mut Block,
+) -> Result<Return, String> {
+    let value = match convert_ast_to_direct_value(&*ast.value, module, current_block) {
+        Ok(r) => r,
+        Err(e) => return Err(e),
+        _ => return Err("create_llvm_ret Unknown expression".to_string()),
     };
-    let mut current_block = match current_function.current_block() {
-        Some(f) => f,
-        None => return Err("create_return_expr no block".to_string()),
-    };
-    let identifier = module
-        .builder
-        .function
-        .block
-        .identifier
-        .build("ret".to_string(), Some(ValueExpression::BINOP(binop)));
 
-    current_block.add_expression(BlockExpression::IDENTIFIER(identifier.clone()));
-    current_function.update_current_block(current_block);
-    module.update_current_function(current_function);
-    Ok((
-        module
-            .builder
-            .function
-            .terminator
-            .create_return(ValueExpression::IDENTIFIER(identifier), None),
-        module,
-    ))
-}
-
-fn create_ret_value(
-    value: ValueExpression,
-    module: Module,
-) -> Result<(Terminator, Module), String> {
-    Ok((
-        module
-            .builder
-            .function
-            .terminator
-            .create_return(value, None),
-        module,
-    ))
-}
-
-pub fn create_return_expr(ret: AstReturn, module: Module) -> Result<(Terminator, Module), String> {
-    match create_expr(&ret.value, module) {
-        Err(e) => Err(e),
-        Ok((BlockExpression::VALUE(ValueExpression::BINOP(binop)), module)) => {
-            create_ret_binop(binop, module)
-        }
-        Ok((BlockExpression::VALUE(value), module)) => create_ret_value(value, module),
-        _ => Err(format!("Unknown expression in create_return_expr")),
-    }
+    Ok(Return::new(value, None))
 }
