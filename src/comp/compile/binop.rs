@@ -13,12 +13,12 @@ pub fn compile_binop(
     module: &mut Module,
     current_block: &mut Block,
 ) -> Result<BinOp, String> {
-    let lhs = match convert_ast_to_direct_value(&*ast.left, module, current_block) {
+    let lhs = match convert_ast_to_direct_value(&ast.left, module, current_block) {
         Ok(r) => r,
         Err(e) => return Err(e),
         _ => return Err("compile_binop Unknown expression lhs".to_string()),
     };
-    let rhs = match convert_ast_to_direct_value(&*ast.right, module, current_block) {
+    let rhs = match convert_ast_to_direct_value(&ast.right, module, current_block) {
         Ok(r) => r,
         Err(e) => return Err(e),
         _ => return Err("compile_binop Unknown expression rhs".to_string()),

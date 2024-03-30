@@ -1,11 +1,6 @@
 pub mod keyword;
 
-use either::Either;
-
-use crate::cst::{
-    atom::Atom,
-    parser::{Parser, ParserDataType},
-};
+use crate::cst::parser::ParserDataType;
 
 use self::keyword::Tokens;
 

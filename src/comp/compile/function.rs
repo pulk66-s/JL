@@ -39,7 +39,11 @@ fn collect_params(
     }
 }
 
-fn generate_blocks(body: Vec<Box<AstExpr>>, module: &mut Module) -> Result<Vec<Block>, String> {
+fn generate_blocks(
+    body: Vec<Box<AstExpr>>,
+    module: &mut Module,
+    current_function: &mut FunctionDefinition,
+) -> Result<Vec<Block>, String> {
     let mut blocks = vec![];
     let mut current_block = module
         .builder
@@ -49,7 +53,8 @@ fn generate_blocks(body: Vec<Box<AstExpr>>, module: &mut Module) -> Result<Vec<B
     let mut block_index = 0;
 
     for expr in body {
-        let llvm_expr = match compile_ast_expr(&*expr, module, &mut current_block) {
+        let llvm_expr = match compile_ast_expr(&expr, module, &mut current_block, current_function)
+        {
             Ok(r) => r,
             Err(e) => return Err(e),
         };
@@ -84,14 +89,17 @@ pub fn create_llvm_from_ast_function(
         Ok(r) => r,
         Err(e) => return Err(e),
     };
-    let body = match generate_blocks(func.body, module) {
+    let mut def = module
+        .builder
+        .function
+        .define(name, return_type, params, vec![]);
+    let body = match generate_blocks(func.body, module, &mut def) {
         Ok(r) => r,
         Err(e) => return Err(e),
     };
-    let def = module
-        .builder
-        .function
-        .define(name, return_type, params, body);
+    let cloned_body = def.body.clone();
 
+    def.body = body;
+    def.body.extend(cloned_body);
     Ok(def)
 }

@@ -1,18 +1,21 @@
 use crate::{
     ast::AstExpr,
     comp::llvm::{
-        builder::function::block::{
-            expressions::{
-                identifier::Identifier, terminator::Terminator, BlockExpression,
-                DirectValueExpression, IndirectValueExpression,
+        builder::function::{
+            block::{
+                expressions::{
+                    identifier::Identifier, terminator::Terminator, BlockExpression,
+                    DirectValueExpression, IndirectValueExpression,
+                },
+                Block,
             },
-            Block,
+            define::FunctionDefinition,
         },
         module::Module,
     },
 };
 
-use super::{binop::compile_binop, ret::create_llvm_ret};
+use super::{binop::compile_binop, condition::create_llvm_condition, ret::create_llvm_ret};
 
 pub fn compile_ast_direct_value_expr(
     ast: &AstExpr,
@@ -25,16 +28,10 @@ pub fn compile_ast_direct_value_expr(
             var.to_string(),
             None,
         ))),
-        e => {
-            println!(
-                "Unknown expression in compile_ast_direct_value_expr: {}",
-                e.to_string()
-            );
-            Err(format!(
-                "Unknown expression in compile_ast_direct_value_expr: {}",
-                e.to_string()
-            ))
-        }
+        e => Err(format!(
+            "Unknown expression in compile_ast_direct_value_expr: {}",
+            e.to_string()
+        )),
     }
 }
 
@@ -48,16 +45,10 @@ pub fn compile_ast_indirect_value_expr(
             Ok(b) => Ok(IndirectValueExpression::BINOP(b)),
             Err(e) => Err(e),
         },
-        e => {
-            println!(
-                "Unknown expression in compile_ast_indirect_value_expr {}",
-                e.to_string()
-            );
-            Err(format!(
-                "Unknown expression in compile_ast_indirect_value_expr {}",
-                e.to_string()
-            ))
-        }
+        e => Err(format!(
+            "Unknown expression in compile_ast_indirect_value_expr {}",
+            e.to_string()
+        )),
     }
 }
 
@@ -67,13 +58,13 @@ pub fn convert_ast_to_direct_value(
     current_block: &mut Block,
 ) -> Result<DirectValueExpression, String> {
     if let Ok(value) = compile_ast_indirect_value_expr(ast, module, current_block) {
-        let name = "ret_value".to_string();
         let identifier = module
             .builder
             .function
             .block
             .identifier
-            .build(name.clone(), Some(value));
+            .build(None, Some(value));
+        let name = identifier.name.clone();
 
         current_block.add_expression(BlockExpression::IDENTIFIER(identifier));
         return Ok(DirectValueExpression::IDENTIFIER(Identifier::new(
@@ -82,7 +73,10 @@ pub fn convert_ast_to_direct_value(
     } else if let Ok(value) = compile_ast_direct_value_expr(ast, module, current_block) {
         return Ok(value);
     } else {
-        return Err("create_llvm_ret Unknown expression".to_string());
+        return Err(format!(
+            "create_llvm_ret Unknown expression {}",
+            ast.to_string()
+        ));
     }
 }
 
@@ -90,12 +84,20 @@ pub fn compile_ast_expr(
     ast: &AstExpr,
     module: &mut Module,
     current_block: &mut Block,
+    current_function: &mut FunctionDefinition,
 ) -> Result<BlockExpression, String> {
     match ast {
-        AstExpr::RETURN(ret) => match create_llvm_ret(ret, module, current_block) {
+        AstExpr::RETURN(ret) => match create_llvm_ret(ret, module, current_block, current_function)
+        {
             Ok(r) => Ok(BlockExpression::TERMINATOR(Terminator::RETURN(r))),
             Err(e) => Err(e),
         },
+        AstExpr::CONDITION(cond) => {
+            match create_llvm_condition(cond, module, current_block, current_function) {
+                Ok(r) => Ok(BlockExpression::TERMINATOR(r)),
+                Err(e) => Err(e),
+            }
+        }
         _ => Err("Unknown expression".to_string()),
     }
 }

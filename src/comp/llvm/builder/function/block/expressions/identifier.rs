@@ -30,14 +30,29 @@ impl LlvmObject for Identifier {
 }
 
 #[derive(Clone)]
-pub struct IdentifierBuilder {}
+pub struct IdentifierBuilder {
+    name_index: usize,
+}
 
 impl IdentifierBuilder {
     pub fn new() -> Self {
-        Self {}
+        Self { name_index: 0 }
     }
 
-    pub fn build(&self, name: String, value: Option<IndirectValueExpression>) -> Identifier {
-        Identifier::new(name, value)
+    pub fn build(
+        &mut self,
+        name: Option<String>,
+        value: Option<IndirectValueExpression>,
+    ) -> Identifier {
+        Identifier::new(
+            match name {
+                Some(n) => n,
+                None => {
+                    self.name_index += 1;
+                    format!("identifier_{}", self.name_index)
+                }
+            },
+            value,
+        )
     }
 }

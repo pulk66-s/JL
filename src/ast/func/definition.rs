@@ -69,10 +69,7 @@ pub fn create_ast_func_defs(tokens: &mut Tokens) -> Result<Vec<AstFuncDef>, Stri
     loop {
         match create_ast_func_def(tokens) {
             Ok(f) => funcs.push(f),
-            Err(e) => {
-                println!("Error: {}", e);
-                break;
-            }
+            Err(_) => break,
         }
     }
     Ok(funcs)

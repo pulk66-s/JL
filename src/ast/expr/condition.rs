@@ -20,10 +20,7 @@ fn fetch_expr(tokens: &mut Tokens) -> Option<Vec<AstExpr>> {
     tokens.next();
     match fetch_fn_body(tokens) {
         Ok(e) => Some(e),
-        Err(e) => {
-            println!("fetch_expr err: {:?}", e);
-            None
-        }
+        Err(e) => None,
     }
 }
 
@@ -41,16 +38,11 @@ pub fn create_ast_condition(tokens: &mut Tokens) -> Option<AstExpr> {
     let condition = match create_ast_expr_value(tokens) {
         Ok(e) => e,
         Err(e) => {
-            println!("condition err: {:?}", e);
             tokens.index = save_index;
             return None;
         }
     };
 
-    println!(
-        "token: {}",
-        tokens.peek().unwrap().unwrap_left().to_string()
-    );
     tokens.next();
     tokens.next();
     tokens.next();
@@ -59,7 +51,6 @@ pub fn create_ast_condition(tokens: &mut Tokens) -> Option<AstExpr> {
     let true_expr = match fetch_fn_body(tokens) {
         Ok(e) => e,
         Err(e) => {
-            println!("true_expr err: {:?}", e);
             tokens.index = save_index;
             return None;
         }

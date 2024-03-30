@@ -7,6 +7,8 @@ pub enum BinOpType {
     ADD,
     SUB,
     MUL,
+    MOD,
+    EQ,
 }
 
 #[derive(Clone)]
@@ -40,6 +42,8 @@ impl BinOpBuilder {
             "+" => Some(BinOpType::ADD),
             "-" => Some(BinOpType::SUB),
             "*" => Some(BinOpType::MUL),
+            "%" => Some(BinOpType::MOD),
+            "==" => Some(BinOpType::EQ),
             _ => None,
         }
     }
@@ -77,6 +81,8 @@ impl LlvmObject for BinOp {
                 BinOpType::ADD => "add",
                 BinOpType::SUB => "sub",
                 BinOpType::MUL => "mul",
+                BinOpType::MOD => "srem",
+                BinOpType::EQ => "icmp eq",
             },
             self.result_type.to_llvm_ir(),
             self.lhs.to_llvm_ir(),

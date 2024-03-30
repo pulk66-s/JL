@@ -3,6 +3,7 @@ pub mod expr;
 pub mod function;
 pub mod ret;
 pub mod variable;
+pub mod condition;
 
 use crate::ast::Ast;
 
