@@ -1,0 +1,31 @@
+main = condition_branches;
+
+condition_branches = IF_KEYWORD & spaces & condition & spaces & condition_body;
+
+condition = OPEN_PAR & spaces & condition_value & spaces & CLOSE_PAR;
+
+condition_value = binop | number;
+
+condition_body = OPEN_BRA & spaces & CLOSE_BRA;
+
+binop = number & spaces & binop_op & spaces & number;
+
+binop_op = PLUS_SIGN | MUL_SIGN | DIV_SIGN | MINUS_SIGN;
+
+number = digit*;
+
+digit = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
+
+space = ' ' | '\n';
+
+spaces = space*?;
+
+PLUS_SIGN = '+';
+MUL_SIGN = '*';
+DIV_SIGN = '/';
+MINUS_SIGN = '-';
+IF_KEYWORD = "if";
+OPEN_PAR = '(';
+CLOSE_PAR = ')';
+OPEN_BRA = '{';
+CLOSE_BRA = '}';

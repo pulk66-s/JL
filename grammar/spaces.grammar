@@ -1,0 +1,2 @@
+spaces = space*?;
+space = ' ' | '\n';

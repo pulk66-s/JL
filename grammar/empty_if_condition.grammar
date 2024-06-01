@@ -1,0 +1,13 @@
+if_condition = IF_KEYWORD & spaces & OPEN_PAR & CLOSE_PAR & spaces & OPEN_BRA & spaces & CLOSE_BRA;
+
+space = ' ' | '\n';
+
+spaces = space*?;
+
+
+
+IF_KEYWORD = "if";
+OPEN_PAR = '(';
+CLOSE_PAR = ')';
+OPEN_BRA = '{';
+CLOSE_BRA = '}';
