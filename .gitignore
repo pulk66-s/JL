@@ -2,9 +2,4 @@
 jl
 .vscode
 vgcore*
-
-
-# Added by cargo
-
-/target
-output
+.stack_work
