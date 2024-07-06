@@ -1,0 +1,18 @@
+main = function;
+
+function = FN_KEYWORK & spaces & identifier & spaces & function_args & spaces & function_body;
+
+function_args = OPEN_PAR & CLOSE_PAR;
+
+function_body = OPEN_BRA & spaces & CLOSE_BRA;
+
+identifier = "add";
+
+spaces = space*?;
+space = ' ' | '\n';
+
+FN_KEYWORK = "fn";
+OPEN_PAR = '(';
+CLOSE_PAR = ')';
+OPEN_BRA = '{';
+CLOSE_BRA = '}';

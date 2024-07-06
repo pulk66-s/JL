@@ -1,0 +1,23 @@
+main = function;
+
+function = FN_KEYWORK & spaces & identifier & spaces & function_args & spaces & function_body;
+
+identifier = letters;
+
+function_args = OPEN_PAR & CLOSE_PAR;
+
+function_body = OPEN_BRA & spaces & CLOSE_BRA;
+
+spaces = space*?;
+space = ' ' | '\n';
+
+letter = LOWERCASE | UPPERCASE;
+letters = letter*?;
+
+FN_KEYWORK = "fn";
+OPEN_PAR = '(';
+CLOSE_PAR = ')';
+OPEN_BRA = '{';
+CLOSE_BRA = '}';
+LOWERCASE = ['a'..'z'];
+UPPERCASE = ['A'..'Z'];

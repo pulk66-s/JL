@@ -1,8 +1,16 @@
-module Parser.Parser where
+module Parser.Parser (
+    Parser(..),
+    runParser,
+    parseOr,
+    parseAnd,
+    satisfy,
+    parseSome,
+    parseEmpty,
+    parseMany,
+    parseMaybe
+) where
 
 import Control.Applicative
-import Grammar.Data
-import Parser.Data
 
 newtype Parser a = Parser {
     run :: String -> Either String (a, String)
@@ -33,9 +41,9 @@ instance Monad Parser where
                 b str'
 
 instance Alternative Parser where
-    empty = Parser run
+    empty = Parser errRun
         where
-            run str = Left "error: empty"
+            errRun _ = Left "error: empty"
     many p = Parser func
         where
             func str = case runParser (some p) str of
@@ -55,11 +63,11 @@ runParser :: Parser [a] -> String -> Either String ([a], String)
 runParser (Parser f) = f
 
 parseOr :: (a -> Parser [b]) -> [a] -> Parser [b]
-parseOr f []     = empty
+parseOr _ []     = empty
 parseOr f (x:xs) = f x <|> parseOr f xs
 
 parseAnd :: (a -> Parser [b]) -> [a] -> Parser [b]
-parseAnd f []     = return []
+parseAnd _ []     = return []
 parseAnd f (x:xs) = do
     a <- f x
     as <- parseAnd f xs
@@ -89,7 +97,7 @@ parseMany f x = do
     return (a ++ flat as)
     where
         flat [] = []
-        flat (x:xs) = x ++ flat xs
+        flat (x':xs) = x' ++ flat xs
 
 parseMaybe :: (a -> Parser [b]) -> a -> Parser [b]
 parseMaybe f x = f x <|> return []

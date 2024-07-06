@@ -1,14 +1,22 @@
 module String (
     trim,
-    split
+    mysplit,
+    contains
 ) where
+
+import Data.List.Split
 
 trim :: String -> String
 trim = reverse . dropWhile (== ' ') . reverse . dropWhile (== ' ')
 
-split :: Char -> String -> [String]
-split _ [] = []
-split c xs = case break (== c) xs of
+mysplit :: Char -> String -> [String]
+mysplit _ [] = []
+mysplit c xs = case break (== c) xs of
   (a, []) -> [a]
-  (a, b)  -> a : split c (tail b)
+  (a, b)  -> a : mysplit c (tail b)
 
+contains :: String -> String -> Bool
+contains _ [] = False
+contains x y = case splitOn x y of
+  (_:_) -> True
+  _     -> False

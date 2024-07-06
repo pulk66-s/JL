@@ -6,10 +6,8 @@ import Data.Char
 import Args.Parse
 import Grammar.Parse
 import Grammar.Data
-import System.IO
 import System.Environment
 import Parser.Parse
-import Parser.ParserCreation
 
 createLogic :: String -> Grammar -> IO ()
 createLogic file grammar = do
@@ -29,6 +27,15 @@ showExpr (And exprs) = do
   putStrLn "And:"
   mapM_ showExpr exprs
 showExpr (ExprCall str) = putStrLn ("ExprCall: " ++ str)
+showExpr (Many expr) = do
+  putStrLn "Many:"
+  showExpr expr
+showExpr (Generator (CharGenerator c1 c2)) = putStrLn ("CharGenerator: " ++ [c1] ++ " " ++ [c2])
+showExpr (Generator (NumberGenerator n1 n2)) = putStrLn ("NumberGenerator: " ++ show n1 ++ " " ++ show n2)
+showExpr (Char c) = putStrLn ("Char: " ++ [c])
+showExpr (Maybe expr) = do
+  putStrLn "Maybe:"
+  showExpr expr
 
 showBlock :: Block -> IO ()
 showBlock (Block name expr) = do
@@ -43,10 +50,10 @@ compile :: IO ()
 compile = do
   argv        <- getArgs
   let args    = parseArgs argv
-  grammarFile <- readFile (grammarFile args)
-  print (grammarFile)
-  print (map init (nonEmpty (lines grammarFile)))
-  case parseGrammar grammarFile of
+  gfile <- readFile (grammarFile args)
+  print (gfile)
+  print (map init (nonEmpty (lines gfile)))
+  case parseGrammar gfile of
     Nothing -> error "Error while parsing gramar file"
     Just g  -> do
       print "Grammar:"

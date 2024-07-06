@@ -1,7 +1,8 @@
 module Grammar.Data (
   Grammar(..),
   Block(..),
-  Expr(..)
+  Expr(..),
+  GeneratorExpr(..)
 ) where
 
 data Expr = Keyword String
@@ -12,13 +13,18 @@ data Expr = Keyword String
   | Many Expr
   | Maybe Expr
   | ExprCall String
+  | Generator GeneratorExpr
+  deriving Show
+
+data GeneratorExpr = CharGenerator Char Char
+  | NumberGenerator Int Int
   deriving Show
 
 data Block = Block {
-  name :: String,
-  expr :: Expr
+  blockName :: String,
+  blockExpr :: Expr
 } deriving Show
 
 data Grammar = Grammar {
-  blocks :: [Block]
+  grammarBlocks :: [Block]
 } deriving Show

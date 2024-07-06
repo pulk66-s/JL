@@ -1,16 +1,24 @@
 module Parser.ParserCreation (
-    parser
+    parser,
+    parseGenerator
 ) where
 
 import Parser.Parser
 import Grammar.Data
 import Parser.Data
+import Data.Char
 
 digit :: Parser Char
 digit = satisfy (`elem` "0123456789")
 
 charC :: Char -> Parser Char
 charC c = satisfy (== c)
+
+inRangeC :: Char -> Char -> Parser Char
+inRangeC c1 c2 = satisfy (\x -> c1 <= x && x <= c2)
+
+inRangeN :: Int -> Int -> Parser Int
+inRangeN n1 n2 = satisfy (\x -> n1 <= (digitToInt x) && (digitToInt x) <= n2) >>= return . read . return
 
 stringS :: String -> Parser String
 stringS [] = return []
@@ -28,8 +36,8 @@ numberN n = do
     if num == n then return num else parseEmpty
 
 executeBlocks :: [Block] -> String -> Parser [Logic]
-executeBlocks blocks blockName  = do
-    let block = filter (\x -> blockName == name x) blocks
+executeBlocks blocks bname  = do
+    let block = filter (\x -> bname == blockName x) blocks
     if null block then parseEmpty else parseBlock (head block) blocks
 
 parseExpr :: [Block] -> Expr -> Parser [Logic]
@@ -40,16 +48,17 @@ parseExpr blocks (Or exprs)     = parseOr (parseExpr blocks) exprs
 parseExpr blocks (And exprs)    = parseAnd (parseExpr blocks) exprs
 parseExpr blocks (ExprCall s)   = executeBlocks blocks s
 parseExpr blocks (Many expr)    = parseMany (parseExpr blocks) expr
-parseExpr blocks (Char c)       = do
+parseExpr _ (Generator gen)     = parseGenerator gen
+parseExpr _ (Char c)            = do
     d <- charC c
     return $ [CharValue d]
-parseExpr blocks (Keyword s)    = do
+parseExpr _ (Keyword s)         = do
     d <- stringS s
-    return $ [KeywordValue s]
+    return $ [KeywordValue d]
 parseExpr blocks (Maybe expr)   = parseMaybe (parseExpr blocks) expr
 
 parseBlock :: Block -> [Block] -> Parser [Logic]
-parseBlock block blocks = parseExpr blocks (expr block)
+parseBlock block blocks = parseExpr blocks (blockExpr block)
 
 parseBlocks :: [Block] -> [Block] -> Parser [Logic]
 parseBlocks [] _            = return []
@@ -59,4 +68,12 @@ parseBlocks (x:xs) blocks   = do
     return (logic ++ logics)
 
 parser :: Grammar -> Parser [Logic]
-parser grammar = parseBlock ((blocks grammar) !! 0) (blocks grammar)
+parser grammar = parseBlock ((grammarBlocks grammar) !! 0) (grammarBlocks grammar)
+
+parseGenerator :: GeneratorExpr -> Parser [Logic]
+parseGenerator (CharGenerator c1 c2) = do
+    d <- inRangeC c1 c2
+    return [CharValue d]
+parseGenerator (NumberGenerator n1 n2) = do
+    d <- inRangeN n1 n2
+    return [NumberValue d]
