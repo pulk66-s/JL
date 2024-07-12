@@ -2,22 +2,45 @@ main = function;
 
 function = FN_KEYWORK & spaces & identifier & spaces & function_args & spaces & function_body;
 
-identifier = letters;
 
-function_args = OPEN_PAR & CLOSE_PAR;
+function_args = OPEN_PAR & spaces & function_arg_body & spaces & CLOSE_PAR;
+function_arg_body = function_arg*? & function_arg_defintion?;
 
-function_body = OPEN_BRA & spaces & CLOSE_BRA;
+function_arg = function_arg_defintion & spaces & COMMA & spaces;
+function_arg_defintion = type & spaces & identifier;
+
+function_body = OPEN_BRA & spaces & function_body_expressions & spaces & CLOSE_BRA;
+
+function_body_expressions = terminal_expressions*?;
+
+terminal_expressions = return_expression & spaces & end_char;
+return_expression = RETURN_KEYWORK & spaces & expression;
+expression = addition;
+addition = number & spaces & PLUS_SIGN & spaces & number;
 
 spaces = space*?;
 space = ' ' | '\n';
 
 letter = LOWERCASE | UPPERCASE;
-letters = letter*?;
+letters = letter*;
+number = digit*;
+digit = [0..9];
+
+type = identifier;
+
+identifier = letters;
+
+end_char = SEMICOLON;
 
 FN_KEYWORK = "fn";
+RETURN_KEYWORK = "return";
+
 OPEN_PAR = '(';
 CLOSE_PAR = ')';
 OPEN_BRA = '{';
 CLOSE_BRA = '}';
 LOWERCASE = ['a'..'z'];
 UPPERCASE = ['A'..'Z'];
+COMMA = ',';
+SEMICOLON = ';';
+PLUS_SIGN = '+';

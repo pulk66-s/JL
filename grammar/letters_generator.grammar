@@ -1,0 +1,5 @@
+main = letter*;
+
+letter = uppercase | lowercase;
+lowercase = ['a'..'z'];
+uppercase = ['A'..'Z'];

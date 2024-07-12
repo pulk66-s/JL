@@ -1,0 +1,16 @@
+main = function_args;
+
+function_args = function_arg*? & function_arg_defintion?;
+
+function_arg = function_arg_defintion & spaces & COMMA & spaces;
+function_arg_defintion = type & spaces & identifier;
+
+type = identifier;
+identifier = letters;
+letters = letter*;
+letter = UPPERCASE | LOWERCASE;
+spaces = ' '*?;
+
+UPPERCASE = ['A'..'Z'];
+LOWERCASE = ['a'..'z'];
+COMMA = ',';

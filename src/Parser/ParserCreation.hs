@@ -18,7 +18,7 @@ inRangeC :: Char -> Char -> Parser Char
 inRangeC c1 c2 = satisfy (\x -> c1 <= x && x <= c2)
 
 inRangeN :: Int -> Int -> Parser Int
-inRangeN n1 n2 = satisfy (\x -> n1 <= (digitToInt x) && (digitToInt x) <= n2) >>= return . read . return
+inRangeN n1 n2 = satisfy (isDigit) >>= \x -> let n = read [x] in if n1 <= n && n <= n2 then return n else parseEmpty
 
 stringS :: String -> Parser String
 stringS [] = return []
