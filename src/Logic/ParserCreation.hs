@@ -1,11 +1,11 @@
-module Parser.ParserCreation (
+module Logic.ParserCreation (
     parser,
     parseGenerator
 ) where
 
-import Parser.Parser
+import Logic.Parser
 import Grammar.Data
-import Parser.Data
+import Logic.Data
 import Data.Char
 
 digit :: Parser Char
@@ -57,8 +57,16 @@ parseExpr _ (Keyword s)         = do
     return $ [KeywordValue d]
 parseExpr blocks (Maybe expr)   = parseMaybe (parseExpr blocks) expr
 
+parseBody :: Block -> [Block] -> Parser [Logic]
+parseBody block blocks = parseExpr blocks (blockExpr block)
+
 parseBlock :: Block -> [Block] -> Parser [Logic]
-parseBlock block blocks = parseExpr blocks (blockExpr block)
+parseBlock block blocks = do
+    body <- parseBody block blocks
+    return [SubBlock LogicBlock {
+        logicBlockBody = body,
+        logicBlockName = blockName block
+    }]
 
 parseBlocks :: [Block] -> [Block] -> Parser [Logic]
 parseBlocks [] _            = return []

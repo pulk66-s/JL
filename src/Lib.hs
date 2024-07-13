@@ -7,12 +7,13 @@ import Args.Parse
 import Grammar.Parse
 import Grammar.Data
 import System.Environment
-import Parser.Parse
+import Logic.Parse
 
 createLogic :: String -> Grammar -> IO ()
 createLogic file grammar = do
   content <- readFile file
   let result = parseFile content grammar
+  print "Result:"
   case result of
     Left logic -> print logic
     Right str  -> print str

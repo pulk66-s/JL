@@ -1,12 +1,11 @@
-module Parser.Parse (
+module Logic.Parse (
     parseFile
 ) where
 
 import Grammar.Data
-import Parser.Data
-import Parser.Parser
-import Parser.ParserCreation
+import Logic.Data
+import Logic.Parser
+import Logic.ParserCreation
 
 parseFile :: String -> Grammar -> Either String ([Logic], String)
 parseFile content grammar   = runParser (parser grammar) content
-

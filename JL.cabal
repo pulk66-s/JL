@@ -29,10 +29,10 @@ library
       Grammar.Data
       Grammar.Parse
       Lib
-      Parser.Data
-      Parser.Parse
-      Parser.Parser
-      Parser.ParserCreation
+      Logic.Data
+      Logic.Parse
+      Logic.Parser
+      Logic.ParserCreation
       String
   other-modules:
       Paths_JL

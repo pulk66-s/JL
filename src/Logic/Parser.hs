@@ -1,4 +1,4 @@
-module Parser.Parser (
+module Logic.Parser (
     Parser(..),
     runParser,
     parseOr,
